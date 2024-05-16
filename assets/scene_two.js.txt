@@ -1,0 +1,49 @@
+export default class SceneTwo extends Phaser.Scene {
+    constructor() {
+        super({ key: "SceneTwo" });
+    }
+
+    // Initialize the scene with data from the previous scene
+    init(data) {
+        this.message = data.message;
+    }
+
+    preload() {
+        // Load tileset and tilemap
+        this.load.tilemapTiledJSON('map_inside', '/assets/maps/hut_inside.json');
+        this.load.image('inside_tiles', '/assets/hut_inside.png'); // Change the key to 'inside_tiles'
+        // Load player
+        this.load.spritesheet('protagonist', '/assets/mainCH.png', { frameWidth: 100, frameHeight: 100 });
+    }
+
+    create() {
+        const gameConfig = this.sys.game.config;
+
+        // Update canvas size if needed
+        gameConfig.width = 500; // Set the desired width
+        gameConfig.height = 500; // Set the desired height
+    
+        // Resize the game canvas
+        this.scale.resize(gameConfig.width, gameConfig.height);
+        // Load the tilemap
+      
+    const map = this.make.tilemap({ key: 'map_inside' });
+
+    // Create the ground layer using the tilemap and tileset
+    const hutTileset = map.addTilesetImage('inside_tiles', 'inside_tiles'); // Change the key to 'inside_tiles'
+    const groundLayer2 = map.createLayer('inside_ground', hutTileset, 0, 0);
+    console.log(groundLayer2)
+        // Set the depth of layers
+        //this.groundLayer.setDepth(0);
+        //this.protagonist.setDepth(1);
+    
+        // Store a reference to the ground layer for later use if needed
+        this.groundLayer2 = groundLayer2;
+           // Update canvas size
+
+    }
+
+    update() {
+        // Update game logic if needed
+    }
+}
