@@ -1,8 +1,9 @@
-import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes } from './config.js';
+import { SCENE_KEYS } from "./scene-keys";
+
 let last_direction;
-export default class SceneTwo extends Phaser.Scene {
+export default class HUT_SCENE extends Phaser.Scene {
     constructor() {
-        super({ key: "SceneTwo" });
+        super({ key: "HUT_SCENE" });
     }
 
     // Initialize the scene with data from the previous scene
@@ -124,7 +125,7 @@ export default class SceneTwo extends Phaser.Scene {
         // Check if the player presses the "f" key
         if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
             // Launch Scene Two
-            this.scene.start("scene-game", {
+            this.scene.start(SCENE_KEYS.MAIN_SCENE, {
               "message": "Exit hut" 
             });
         }

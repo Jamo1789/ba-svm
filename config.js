@@ -26,3 +26,4 @@ export const waterIndex = [
 ];
 
 export const dockIndex = [452,550,454, 453, 484, 486,517,516]
+export default sizes
