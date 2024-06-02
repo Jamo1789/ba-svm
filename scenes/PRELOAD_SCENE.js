@@ -72,7 +72,7 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.spritesheet('enemy', '/assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
    this.load.spritesheet('boat', '/assets/boat.png', { frameWidth: 200, frameHeight: 200 });
   
-  
+   this.load.audio('light-rain', '../assets/light-rain.mp3');
   
    
  

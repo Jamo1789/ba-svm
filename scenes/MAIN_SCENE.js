@@ -18,23 +18,10 @@ export default class MAIN_SCENE extends Phaser.Scene {
   }
 
   preload() {
-    // Load spritesheet for the protagonist
-    this.load.spritesheet('protagonist', '/assets/mainCH2.png', { frameWidth: 100, frameHeight: 100 });
-    this.load.spritesheet('enemy', '/assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
-    this.load.spritesheet('boat', '/assets/boat.png', { frameWidth: 200, frameHeight: 200 });
-   
-   
-   
-    
-  
-    // Load tileset and tilemap
-    this.load.tilemapTiledJSON('map', '/assets/maps/worldmap.json');
 
-    
-    
-    this.load.image('spruce', '/assets/spruce.png', { frameWidth: 150, frameHeight: 150 });
     this.load.scenePlugin('AnimatedTiles', '/phaser-animated-tiles/src/plugin/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
-    this.load.image('dark_tiles', 'assets/maps/terrain_dark.png');
+  
+    
   }
 
   create() {
@@ -95,7 +82,12 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
 
     this.hungerBar = this.add.graphics();
     this.updateHungerBar();
-
+    // Add and play the light-rain audio
+    this.lightRainSound = this.sound.add('light-rain', {
+        loop: true, // Loop the audio
+        volume: 1.5 // Set the volume level
+    });
+    this.lightRainSound.play();
     // Add hunger level text inside the progress bar
     this.hungerText = this.add.text(700, 35, 'Village hunger level', {
       font: '18px monospace',
@@ -237,7 +229,7 @@ walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 // Add colliders for the protagonist with both layers
 
-//this.physics.add.collider(this.waterLayer, this.protagonist);
+this.physics.add.collider(this.waterLayer, this.protagonist);
 this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
