@@ -88,24 +88,23 @@ const transportlayer = map.createLayer('transportlayer', darkTileset, 0, 0);
 
 const walls = map.createLayer('walls', darkTileset, 0, 0);
 const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlayer initialized last.
-// Create hunger level progress bar
-this.hungerBox = this.add.graphics();
-this.hungerBox.fillStyle(0x222222, 0.8);
-this.hungerBox.fillRect(3500, 20, 200, 30); // Adjust position and size as needed
+    // Create hunger level progress bar
+    this.hungerBox = this.add.graphics();
+    this.hungerBox.fillStyle(0x222222, 0.8);
+    this.hungerBox.fillRect(600, 20, 200, 30); // Adjust position and size as needed
 
-this.hungerBar = this.add.graphics();
-this.updateHungerBar();
+    this.hungerBar = this.add.graphics();
+    this.updateHungerBar();
 
-// Add hunger level text
-// Add hunger level text inside the progress bar
-this.hungerText = this.add.text(700, 35, 'Village hunger level', {
-  font: '18px monospace',
-  fill: '#ffffff'
-});
-
-this.hungerText.setOrigin(0.5, 0.5);
-this.hungerBox.setDepth(1000);
-this.hungerText.setDepth(1001);
+    // Add hunger level text inside the progress bar
+    this.hungerText = this.add.text(700, 35, 'Village hunger level', {
+      font: '18px monospace',
+      fill: '#ffffff'
+    });
+    this.hungerText.setOrigin(0.5, 0.5);
+    this.hungerBox.setDepth(1000);
+    this.hungerBar.setDepth(1001);
+    this.hungerText.setDepth(1002);
 this.protagonist.setDepth(4);
 this.boat.setDepth(4);
     // Adjust the depth of layers as needed
@@ -238,7 +237,7 @@ walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 // Add colliders for the protagonist with both layers
 
-this.physics.add.collider(this.waterLayer, this.protagonist);
+//this.physics.add.collider(this.waterLayer, this.protagonist);
 this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
@@ -265,6 +264,9 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
        this.hungerLevel = 0; // Prevent hunger level from going below 0
    }
    this.updateHungerBar();
+
+   // Call this to update the position of the hunger bar
+   this.updateHungerBarPosition();
     //console.log(this.waterLayer.culledTiles[0])
     const tileIndex112 = this.transportlayer.findByIndex(940);
     const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
@@ -372,8 +374,39 @@ updateHungerBar() {
     console.log(tileIndex)
     
 };
+createHungerBar() {
+    this.hungerBox = this.add.graphics();
+    this.hungerBox.fillStyle(0x222222, 0.8);
+    this.hungerBox.fillRect(0, 0, 200, 30); // Position will be updated dynamically
 
+    this.hungerBar = this.add.graphics();
+    this.updateHungerBar();
 
+    this.hungerText = this.add.text(100, 15, 'Village hunger level', {
+      font: '18px monospace',
+      fill: '#ffffff'
+    });
+    this.hungerText.setOrigin(0.5, 0.5);
+
+    this.hungerBox.setDepth(1000);
+    this.hungerBar.setDepth(1001);
+    this.hungerText.setDepth(1002);
+}
+updateHungerBar() {
+    this.hungerBar.clear();
+    this.hungerBar.fillStyle(0xff0000, 1);
+    this.hungerBar.fillRect(10, 5, 180 * (this.hungerLevel / 100), 20); // Position relative to hungerBox
+}
+
+updateHungerBarPosition() {
+    const camera = this.cameras.main;
+    const screenWidth = this.scale.width;
+
+    // Set positions relative to the top right corner of the camera view
+    this.hungerBox.setPosition(camera.scrollX + screenWidth - 220, camera.scrollY + 20);
+    this.hungerBar.setPosition(camera.scrollX + screenWidth - 210, camera.scrollY + 25);
+    this.hungerText.setPosition(camera.scrollX + screenWidth - 110, camera.scrollY + 35);
+}
 }
 
 
