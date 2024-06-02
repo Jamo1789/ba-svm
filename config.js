@@ -7,7 +7,7 @@ export const sizes = {
 export const hitboxWidth = 30;
 export const hitboxHeight = 10;
 export const hitboxOffsetX = 40; // Offset from the left edge of the sprite
-export const hitboxOffsetY = 60; // Offset from the top edge of the sprite
+export const hitboxOffsetY = 80; // Offset from the top edge of the sprite
 //walls tile indexes
 export const collidableTileIndexes = [
     1084, 1085, 1086, 1087, 1088, 1089, 1098, 1103, 1104, 1105,
@@ -24,3 +24,5 @@ export const collidableTileIndexes = [
 export const waterIndex = [
 188,189,190
 ];
+
+export const dockIndex = [452,550,454, 453, 484, 486,517,516]

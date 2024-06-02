@@ -2,7 +2,7 @@ import "./style.css";
 import Phaser from "phaser";
 import RainFX from './assets/objects/weather.js';
 // main.js
-import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, waterIndex } from './config.js';
+import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, dockIndex } from './config.js';
 import SceneTwo from './scene-two.js'; // Import SceneTwo from scene-two.js
 
 let last_direction;
@@ -16,8 +16,9 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     // Load spritesheet for the protagonist
-    this.load.spritesheet('protagonist', '/assets/mainCH.png', { frameWidth: 100, frameHeight: 100 });
+    this.load.spritesheet('protagonist', '/assets/mainCH2.png', { frameWidth: 100, frameHeight: 100 });
     this.load.spritesheet('enemy', '/assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
+    this.load.spritesheet('boat', '/assets/boat.png', { frameWidth: 200, frameHeight: 200 });
    
    
    
@@ -56,6 +57,7 @@ class GameScene extends Phaser.Scene {
      // Initialize the hitbox sprite for collision detection
 
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
+    this.boat = this.physics.add.sprite(3300, 700, 'boat');
  
 
     // Set up properties for the water spirit
@@ -84,6 +86,7 @@ const transportlayer = map.createLayer('transportlayer', darkTileset, 0, 0);
 const walls = map.createLayer('walls', darkTileset, 0, 0);
 const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlayer initialized last.
 this.protagonist.setDepth(4);
+this.boat.setDepth(4);
     // Adjust the depth of layers as needed
     groundLayer.setDepth(1);
     waterLayer.setDepth(0);
@@ -116,7 +119,7 @@ this.protagonist.setDepth(4);
     //up
     this.anims.create({
       key: 'move-up',
-      frames: this.anims.generateFrameNumbers('protagonist', { start: 1, end: 2 }),
+      frames: this.anims.generateFrameNumbers('protagonist', { start: 1, end: 8 }),
       frameRate: 10,
       repeat: -1
     });
@@ -130,42 +133,42 @@ this.protagonist.setDepth(4);
      //down
     this.anims.create({
       key: 'move-down',
-      frames: this.anims.generateFrameNumbers('protagonist', { start: 7, end: 8 }),
+      frames: this.anims.generateFrameNumbers('protagonist', { start: 28, end: 37 }),
       frameRate: 10,
       repeat: -1
     });
       //idle down
     this.anims.create({
       key: 'idle-down',
-      frames: this.anims.generateFrameNumbers('protagonist', { frames: [6] }), // Adjust the frame numbers as needed
+      frames: this.anims.generateFrameNumbers('protagonist', { frames: [27] }), // Adjust the frame numbers as needed
       frameRate: 5,
       repeat: -1
     });
     //left
     this.anims.create({
       key: 'move-left',
-      frames: this.anims.generateFrameNumbers('protagonist', { start: 10, end: 11 }),
+      frames: this.anims.generateFrameNumbers('protagonist', { start: 18, end: 26 }),
       frameRate: 10,
       repeat: -1
     });
     //idle left
     this.anims.create({
       key: 'idle-left',
-      frames: this.anims.generateFrameNumbers('protagonist', { frames: [11] }), // Adjust the frame numbers as needed
+      frames: this.anims.generateFrameNumbers('protagonist', { frames: [18] }), // Adjust the frame numbers as needed
       frameRate: 5,
       repeat: -1
     });
     //right
     this.anims.create({
       key: 'move-right',
-      frames: this.anims.generateFrameNumbers('protagonist', { start: 4, end: 5 }),
+      frames: this.anims.generateFrameNumbers('protagonist', { start: 10, end: 17 }),
       frameRate: 10,
       repeat: -1
     });
     //idle right
     this.anims.create({
       key: 'idle-right',
-      frames: this.anims.generateFrameNumbers('protagonist', { frames: [3] }), // Adjust the frame numbers as needed
+      frames: this.anims.generateFrameNumbers('protagonist', { frames: [9] }), // Adjust the frame numbers as needed
       frameRate: 5,
       repeat: -1
     });
@@ -205,10 +208,10 @@ waterLayer.renderDebug = true;
   map.setCollision(index, true, this.walls);
 });
 // Set up collision detection for water layer
-map.setCollisionBetween(1, 1000, true, 'waterlayer'); // Adjust tile indexes as needed
+waterLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 // Set up collision detection for walls layer
-map.setCollisionBetween(1, 1000, true, 'walls'); // Adjust tile indexes as needed
+walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 
 
@@ -219,12 +222,16 @@ this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
 this.enterHutText.setDepth(100);
-//this.physics.add.existing(this.protagonist);
 
+console.log(this.protagonist.x)
 
   }
 
   update() {
+    dockIndex.forEach(index => {
+      if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
+        this.waterLayer.setCollisionBetween(1, 1000, false);
+  });
     
     // Reset velocity
     this.protagonist.setVelocity(0);
@@ -311,9 +318,9 @@ this.logProtagonistTileIndex()
 }
 
 logProtagonistTileIndex() {
-  const tile = this.waterLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y);
+  const tile = this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y);
   if (tile) {
-      console.log("Protagonist tile index in waterLayer:", tile.index);
+      console.log("Protagonist tile index in grasslayer:", tile.index);
       
   }
   
