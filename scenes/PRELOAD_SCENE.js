@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { SCENE_KEYS } from './scene-keys.js';
-
 export default class PreloadScene extends Phaser.Scene {
     constructor() {
         super(SCENE_KEYS.PRELOAD_SCENE);
@@ -73,6 +72,7 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.spritesheet('boat', '/assets/boat.png', { frameWidth: 200, frameHeight: 200 });
   
    this.load.audio('light-rain', '../assets/light-rain.mp3');
+   this.load.audio('rain-inside', '../assets/rain-inside.mp3');
   
    
  
@@ -84,6 +84,8 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.image('spruce', '/assets/spruce.png', { frameWidth: 150, frameHeight: 150 });
    this.load.scenePlugin('AnimatedTiles', '/phaser-animated-tiles/src/plugin/AnimatedTiles.js', 'animatedTiles', 'animatedTiles');
    this.load.image('dark_tiles', 'assets/maps/terrain_dark.png');
+   this.load.tilemapTiledJSON('map_inside', '/assets/maps/hut_inside.json');
+   this.load.image('inside_tiles', '/assets/hut_inside.png'); // Change the key to 'inside_tiles'
     }
 
   create() {

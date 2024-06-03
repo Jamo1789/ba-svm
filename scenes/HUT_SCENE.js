@@ -1,5 +1,5 @@
 import { SCENE_KEYS } from "./scene-keys";
-
+import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, dockIndex } from '../config.js';
 let last_direction;
 export default class HUT_SCENE extends Phaser.Scene {
     constructor() {
@@ -13,10 +13,9 @@ export default class HUT_SCENE extends Phaser.Scene {
 
     preload() {
         // Load tileset and tilemap
-        this.load.tilemapTiledJSON('map_inside', '/assets/maps/hut_inside.json');
-        this.load.image('inside_tiles', '/assets/hut_inside.png'); // Change the key to 'inside_tiles'
+
         // Load player
-        this.load.spritesheet('protagonist', '/assets/mainCH.png', { frameWidth: 100, frameHeight: 100 });
+
     }
 
     create() {
@@ -38,7 +37,14 @@ export default class HUT_SCENE extends Phaser.Scene {
         
         // Create the protagonist sprite
         this.protagonist = this.physics.add.sprite(240, 410, 'protagonist');
+        this.protagonist.body.setSize(hitboxWidth, hitboxHeight);
+        this.protagonist.body.setOffset(hitboxOffsetX, hitboxOffsetY);
+        this.rainInsideSound = this.sound.add('rain-inside', {
+          loop: true, // Loop the audio
+          volume: 1.5 // Set the volume level
+      });
     
+      this.rainInsideSound.play();
         // Set the depth of layers
         groundLayer2.setDepth(0);
         this.protagonist.setDepth(1);

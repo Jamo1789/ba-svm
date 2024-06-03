@@ -236,7 +236,8 @@ this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press
 this.enterHutText.setDepth(100);
 
 console.log(this.protagonist.x + " " + this.protagonist.y)
-
+        // Add shutdown event listener
+        this.events.on('shutdown', this.shutdown, this);
   }
 
   update() {
@@ -278,6 +279,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
           this.scene.start(SCENE_KEYS.HUT_SCENE, {
             "message": "Entered hut" 
           });
+          this.shutdown(); // Manually call the shutdown method
       }
   } else {
       // Hide "Enter hut" text if the player is not close to the hut
@@ -389,7 +391,11 @@ updateHungerBar() {
     this.hungerBar.fillStyle(0xff0000, 1);
     this.hungerBar.fillRect(10, 5, 180 * (this.hungerLevel / 100), 20); // Position relative to hungerBox
 }
-
+shutdown() {
+  if (this.lightRainSound) {
+      this.lightRainSound.stop();
+  }
+}
 updateHungerBarPosition() {
     const camera = this.cameras.main;
     const screenWidth = this.scale.width;
