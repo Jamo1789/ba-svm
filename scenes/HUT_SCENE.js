@@ -27,14 +27,16 @@ export default class HUT_SCENE extends Phaser.Scene {
     
         // Resize the game canvas
         this.scale.resize(gameConfig.width, gameConfig.height);
-    
+      
         // Load the tilemap
         const map = this.make.tilemap({ key: 'map_inside' });
     
         // Create the ground layer using the tilemap and tileset
         const hutTileset = map.addTilesetImage('inside_tiles', 'inside_tiles'); // Change the key to 'inside_tiles'
         const groundLayer2 = map.createLayer('inside_ground', hutTileset, 0, 0);
-        
+        const wallsLayer = map.createLayer('walls', hutTileset, 0, 0);
+                // Set collision for tile index 1
+                wallsLayer.setCollision();
         // Create the protagonist sprite
         this.protagonist = this.physics.add.sprite(240, 410, 'protagonist');
         this.protagonist.body.setSize(hitboxWidth, hitboxHeight);
@@ -49,9 +51,10 @@ export default class HUT_SCENE extends Phaser.Scene {
         groundLayer2.setDepth(0);
         this.protagonist.setDepth(1);
     
-        // Store a reference to the ground layer for later use if needed
-        this.groundLayer2 = groundLayer2;
-    
+  
+
+        // Enable collision between the protagonist and the ground layer
+        this.physics.add.collider(this.protagonist, groundLayer2);
         this.anims.create({
             key: 'move-up',
             frames: this.anims.generateFrameNumbers('protagonist', { start: 1, end: 2 }),
@@ -111,6 +114,14 @@ export default class HUT_SCENE extends Phaser.Scene {
           this.cursors = this.input.keyboard.createCursorKeys();
           this.exitHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to exit the hut', { font: '24px Arial', fill: '#ffffff' });
           this.exitHutText.setDepth(100);
+
+          this.wallsLayer = wallsLayer 
+                // Store a reference to the ground layer for later use if needed
+        this.groundLayer2 = groundLayer2;
+        this.protagonist.body.setCollideWorldBounds(true);
+        
+        wallsLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
+        this.physics.add.collider(this.protagonist, this.wallsLayer);
     }
     
 
