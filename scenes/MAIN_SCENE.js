@@ -48,7 +48,18 @@ export default class MAIN_SCENE extends Phaser.Scene {
 
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
- 
+    this.boat.setOrigin(0.5, 0.5);
+        
+    // Rocking animation using tweens
+    this.tweens.add({
+        targets: this.boat,
+        y: '+=5',
+        angle: 2,
+        duration: 1000,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1
+    });
 
     // Set up properties for the water spirit
     this.enemy.speed = 100; // Adjust the speed as needed
@@ -233,8 +244,11 @@ this.physics.add.collider(this.waterLayer, this.protagonist);
 this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
+this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
 this.enterHutText.setDepth(100);
-
+this.boardBoatText.setDepth(100);
+this.enterHutText.setVisible(false);
+this.boardBoatText.setVisible(false);
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
@@ -265,11 +279,13 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
     const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
     const tileCenterY = this.transportlayer.tileToWorldY(tileIndex112.y);
     const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
+    const distanceToBoat = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.boat.x, this.boat.y);
     
     // Update "Enter hut" text position to follow the player
-    this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y);
+     this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
+     this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
     
-    if (distance <= 150) {
+    if (distance <= 50) {
       // Display "Enter hut" text if the player is close to the hut
       this.enterHutText.setVisible(true);
       
@@ -285,9 +301,78 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       // Hide "Enter hut" text if the player is not close to the hut
       this.enterHutText.setVisible(false);
   }
+  this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
+  this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
+  this.enterHutText.setDepth(100);
+  this.boardBoatText.setDepth(100);
   
+  console.log(this.protagonist.x + " " + this.protagonist.y)
+          // Add shutdown event listener
+          this.events.on('shutdown', this.shutdown, this);
+    }
+  
+    update() {
+      dockIndex.forEach(index => {
+        if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
+          this.waterLayer.setCollisionBetween(1, 1000, false);
+    });
+      
+      // Reset velocity
+      this.protagonist.setVelocity(0);
+      this.physics.collide(this.protagonist, this.walls, () => {
+        console.log("hit");
+    }, null, this);
+     // Decrease hunger level over time
+     this.hungerLevel -= this.hungerDecreaseRate;
+     if (this.hungerLevel < 0) {
+         this.hungerLevel = 0; // Prevent hunger level from going below 0
+     }
+     this.updateHungerBar();
+  
+     // Call this to update the position of the hunger bar
+     this.updateHungerBarPosition();
+      //console.log(this.waterLayer.culledTiles[0])
+      const tileIndex112 = this.transportlayer.findByIndex(940);
+      const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
+      const tileCenterY = this.transportlayer.tileToWorldY(tileIndex112.y);
+      const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
+      const distanceToBoat = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.boat.x, this.boat.y);
+      
+      // Update "Enter hut" text position to follow the player
+      this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y);
+      
+      if (distance <= 50) {
+        // Display "Enter hut" text if the player is close to the hut
+        this.enterHutText.setVisible(true);
+        
+        // Check if the player presses the "f" key
+        if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
+            // Launch Scene Two
+            this.scene.start(SCENE_KEYS.HUT_SCENE, {
+              "message": "Entered hut" 
+            });
+            this.shutdown(); // Manually call the shutdown method
+        }
+    } else {
+        // Hide "Enter hut" text if the player is not close to the hut
+        this.enterHutText.setVisible(false);
+    }
 
+// Update "Board the boat" text position to follow the player
+this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
 
+// Display "Board the boat" text if the player is close to the boat
+if (distanceToBoat <= 200) {
+    this.boardBoatText.setVisible(true);
+    // Check if the player presses the "f" key
+    if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
+        // Implement boarding boat logic here
+        console.log("Boarding the boat");
+        // For example, transition to another scene or trigger an animation
+    }
+} else {
+    this.boardBoatText.setVisible(false);
+}
     // Handle keyboard input..
     if (this.cursors.up.isDown) {
       this.protagonist.setVelocityY(-160);
@@ -406,5 +491,3 @@ updateHungerBarPosition() {
     this.hungerText.setPosition(camera.scrollX + screenWidth - 110, camera.scrollY + 35);
 }
 }
-
-
