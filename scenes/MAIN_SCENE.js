@@ -49,7 +49,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
     this.boat.setOrigin(0.5, 0.5);
-        
+    
+    this.boatOnBoard = this.add.sprite(this.boat.x, this.boat.y, 'boatOnBoard');    
     // Rocking animation using tweens
     this.tweens.add({
         targets: this.boat,
@@ -110,6 +111,7 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     this.hungerText.setDepth(1002);
 this.protagonist.setDepth(4);
 this.boat.setDepth(4);
+this.boatOnBoard.setDepth(4);
     // Adjust the depth of layers as needed
     groundLayer.setDepth(1);
     waterLayer.setDepth(0);
@@ -249,6 +251,7 @@ this.enterHutText.setDepth(100);
 this.boardBoatText.setDepth(100);
 this.enterHutText.setVisible(false);
 this.boardBoatText.setVisible(false);
+this.boatOnBoard.setVisible(false); // Initially invisible
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
@@ -301,6 +304,9 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       // Hide "Enter hut" text if the player is not close to the hut
       this.enterHutText.setVisible(false);
   }
+
+  
+
   this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
   this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
   this.enterHutText.setDepth(100);
@@ -308,7 +314,9 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   
   console.log(this.protagonist.x + " " + this.protagonist.y)
           // Add shutdown event listener
-          this.events.on('shutdown', this.shutdown, this);
+
+  this.events.on('shutdown', this.shutdown, this);
+        
     }
   
     update() {
@@ -365,11 +373,18 @@ this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // 
 if (distanceToBoat <= 200) {
     this.boardBoatText.setVisible(true);
     // Check if the player presses the "f" key
-    if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
-        // Implement boarding boat logic here
-        console.log("Boarding the boat");
-        // For example, transition to another scene or trigger an animation
-    }
+  if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
+              // Destroy protagonist and boat
+              this.protagonist.setVisible(false);
+              this.boat.setVisible(false);
+
+              // Make the boatOnBoard visible and start its animation
+              this.boatOnBoard.setVisible(true);
+             // Set camera to follow the new boat
+             this.cameras.main.startFollow(this.boatOnBoard);
+
+              console.log("Boarded the boat");
+      }
 } else {
     this.boardBoatText.setVisible(false);
 }
@@ -417,6 +432,24 @@ if (distanceToBoat <= 200) {
   //console.log("spirit on water", true);
   
 }
+    // Control the boatOnBoard movement
+    if (this.boatOnBoard.visible) {
+      if (this.cursors.left.isDown) {
+          this.boatOnBoard.setVelocityX(-200);
+      } else if (this.cursors.right.isDown) {
+          this.boatOnBoard.setVelocityX(200);
+      } else {
+          this.boatOnBoard.setVelocityX(0);
+      }
+
+      if (this.cursors.up.isDown) {
+          this.boatOnBoard.setVelocityY(-200);
+      } else if (this.cursors.down.isDown) {
+          this.boatOnBoard.setVelocityY(200);
+      } else {
+          this.boatOnBoard.setVelocityY(0);
+      }
+  }
 this.logProtagonistTileIndex()
 //this.handleEnterHut()
 
