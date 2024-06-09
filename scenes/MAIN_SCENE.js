@@ -25,7 +25,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
   }
 
   create() {
-
+    this.isOnBoat = false; // Add this flag in the create method
     //resize canvas when coming from scene-two
     const gameConfig = this.sys.game.config;
             // Create the weather effects
@@ -308,7 +308,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
 this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
 
 // Display "Board the boat" text if the player is close to the boat
-if (distanceToBoat <= 200) {
+if (distanceToBoat <= 200 && this.isOnBoat == false) {
     this.boardBoatText.setVisible(true);
     // Check if the player presses the "f" key
   if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
@@ -318,6 +318,7 @@ if (distanceToBoat <= 200) {
 
               // Make the boatOnBoard visible and start its animation
               this.boatOnBoard.setVisible(true);
+              this.isOnBoat=true;
              // Set camera to follow the new boat
              this.cameras.main.startFollow(this.boatOnBoard);
 
@@ -358,6 +359,7 @@ if (closestDistance <= 50) {
 } else {
     this.disembarkText.setVisible(false);
 }
+if(this.isOnBoat==false){
     // Handle keyboard input..
     if (this.cursors.up.isDown) {
       this.protagonist.setVelocityY(-160);
@@ -391,6 +393,9 @@ if (closestDistance <= 50) {
       }
       
     }
+  } else {
+    this.protagonist.setVelocity(0);
+  }
     this.physics.moveToObject(this.enemy, this.protagonist, this.enemy.speed);
      // Play the appropriate animation based on the collision result
  if (spirit_terrain == "street") {
