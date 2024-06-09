@@ -50,7 +50,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
     this.boat.setOrigin(0.5, 0.5);
     
-    this.boatOnBoard = this.add.sprite(this.boat.x, this.boat.y, 'boatOnBoard');    
+    this.boatOnBoard = this.physics.add.sprite(this.boat.x, this.boat.y, 'boatOnBoard');
+    
     // Rocking animation using tweens
     this.tweens.add({
         targets: this.boat,
@@ -120,12 +121,7 @@ this.boatOnBoard.setDepth(4);
     hutLayer.setDepth(30);
     walls.setDepth(2);
     transportlayer.setDepth(2);
-   
-// Enable collision for the specified tile indexes
-// Set collision for specified tile indexes in the waterLayer
-
-
-
+// Assuming groundLayer is already created and added
 
     this.anims.create({
       key: 'enemy_move_street',
@@ -228,7 +224,7 @@ waterLayer.renderDebug = true;
  this.walls = walls;
  this.transportlayer = transportlayer;
 
-
+ 
  collidableTileIndexes.forEach(index => {
   map.setCollision(index, true, this.walls);
 });
@@ -237,8 +233,8 @@ waterLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 // Set up collision detection for walls layer
 walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
-
-
+this.physics.add.collider(this.boatOnBoard, this.groundLayer);
+groundLayer.setCollisionBetween(1,1000, true);
 
 // Add colliders for the protagonist with both layers
 
@@ -247,78 +243,20 @@ this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
 this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
+this.disembarkText = this.add.text(this.boatOnBoard.x, this.boatOnBoard.y, 'Press f to disembark', { font: '24px Arial', fill: '#ffffff' });
 this.enterHutText.setDepth(100);
 this.boardBoatText.setDepth(100);
+this.disembarkText.setDepth(100);
 this.enterHutText.setVisible(false);
 this.boardBoatText.setVisible(false);
 this.boatOnBoard.setVisible(false); // Initially invisible
+this.disembarkText.setVisible(true); // Initially invisible
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
+        console.log(this.disembarkText)
   }
 
-  update() {
-    dockIndex.forEach(index => {
-      if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
-        this.waterLayer.setCollisionBetween(1, 1000, false);
-  });
-    
-    // Reset velocity
-    this.protagonist.setVelocity(0);
-    this.physics.collide(this.protagonist, this.walls, () => {
-      console.log("hit");
-  }, null, this);
-   // Decrease hunger level over time
-   this.hungerLevel -= this.hungerDecreaseRate;
-   if (this.hungerLevel < 0) {
-       this.hungerLevel = 0; // Prevent hunger level from going below 0
-   }
-   this.updateHungerBar();
-
-   // Call this to update the position of the hunger bar
-   this.updateHungerBarPosition();
-    //console.log(this.waterLayer.culledTiles[0])
-    const tileIndex112 = this.transportlayer.findByIndex(940);
-    const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
-    const tileCenterY = this.transportlayer.tileToWorldY(tileIndex112.y);
-    const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
-    const distanceToBoat = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.boat.x, this.boat.y);
-    
-    // Update "Enter hut" text position to follow the player
-     this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
-     this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
-    
-    if (distance <= 50) {
-      // Display "Enter hut" text if the player is close to the hut
-      this.enterHutText.setVisible(true);
-      
-      // Check if the player presses the "f" key
-      if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
-          // Launch Scene Two
-          this.scene.start(SCENE_KEYS.HUT_SCENE, {
-            "message": "Entered hut" 
-          });
-          this.shutdown(); // Manually call the shutdown method
-      }
-  } else {
-      // Hide "Enter hut" text if the player is not close to the hut
-      this.enterHutText.setVisible(false);
-  }
-
-  
-
-  this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
-  this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
-  this.enterHutText.setDepth(100);
-  this.boardBoatText.setDepth(100);
-  
-  console.log(this.protagonist.x + " " + this.protagonist.y)
-          // Add shutdown event listener
-
-  this.events.on('shutdown', this.shutdown, this);
-        
-    }
-  
     update() {
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
@@ -387,6 +325,38 @@ if (distanceToBoat <= 200) {
       }
 } else {
     this.boardBoatText.setVisible(false);
+}
+
+// Update "disembark" text position to follow the boatOnBoard
+this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 30); // Slightly above the boat
+
+// Calculate the distance to the nearest ground tile
+const groundTiles = this.groundLayer.getTilesWithinWorldXY(this.boatOnBoard.x - 32, this.boatOnBoard.y - 32, 64, 64, { isColliding: true });
+let closestDistance = Infinity;
+groundTiles.forEach(tile => {
+    const distance = Phaser.Math.Distance.Between(this.boatOnBoard.x, this.boatOnBoard.y, tile.getCenterX(), tile.getCenterY());
+    if (distance < closestDistance) {
+        closestDistance = distance;
+    }
+});
+
+// Display "disembark" text if the boat is close to the ground layer
+if (closestDistance <= 50) {
+    this.disembarkText.setVisible(true);
+
+    // Check if the player presses the "f" key to disembark
+    if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
+        this.boatOnBoard.setVisible(false);
+        this.protagonist.setPosition(this.boatOnBoard.x, this.boatOnBoard.y);
+        this.protagonist.setVisible(true);
+
+        // Set camera to follow the protagonist again
+        this.cameras.main.startFollow(this.protagonist);
+
+        console.log("Disembarked the boat");
+    }
+} else {
+    this.disembarkText.setVisible(false);
 }
     // Handle keyboard input..
     if (this.cursors.up.isDown) {
