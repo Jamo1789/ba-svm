@@ -244,20 +244,23 @@ this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
 this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
 this.disembarkText = this.add.text(this.boatOnBoard.x, this.boatOnBoard.y, 'Press f to disembark', { font: '24px Arial', fill: '#ffffff' });
+
 this.enterHutText.setDepth(100);
 this.boardBoatText.setDepth(100);
 this.disembarkText.setDepth(100);
 this.enterHutText.setVisible(false);
 this.boardBoatText.setVisible(false);
 this.boatOnBoard.setVisible(false); // Initially invisible
-this.disembarkText.setVisible(true); // Initially invisible
+this.disembarkText.setVisible(false); // Initially invisible
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
-        console.log(this.disembarkText)
+    
+      
   }
 
     update() {
+    
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);
@@ -329,10 +332,10 @@ if (distanceToBoat <= 200 && this.isOnBoat == false) {
 }
 
 // Update "disembark" text position to follow the boatOnBoard
-this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 30); // Slightly above the boat
+this.disembarkText.setPosition(3300, 200); // Slightly above the boat
 
 // Calculate the distance to the nearest ground tile
-const groundTiles = this.groundLayer.getTilesWithinWorldXY(this.boatOnBoard.x - 32, this.boatOnBoard.y - 32, 64, 64, { isColliding: true });
+const groundTiles = this.groundLayer.getTilesWithinWorldXY(this.boatOnBoard.x, this.boatOnBoard.y - 50, 64, 64);
 let closestDistance = Infinity;
 groundTiles.forEach(tile => {
     const distance = Phaser.Math.Distance.Between(this.boatOnBoard.x, this.boatOnBoard.y, tile.getCenterX(), tile.getCenterY());
@@ -340,9 +343,11 @@ groundTiles.forEach(tile => {
         closestDistance = distance;
     }
 });
-
+this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 30); // Slightly above the boat
+console.log(closestDistance)
 // Display "disembark" text if the boat is close to the ground layer
-if (closestDistance <= 50) {
+//console.log(groundTiles)
+if (closestDistance <= 50 && this.isOnBoat == true) {
     this.disembarkText.setVisible(true);
 
     // Check if the player presses the "f" key to disembark
