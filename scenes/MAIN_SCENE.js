@@ -15,6 +15,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     super(SCENE_KEYS.MAIN_SCENE);
     this.hungerLevel = 100; // Initial hunger level
     this.hungerDecreaseRate = 0.01; // Rate at which hunger level decreases
+    this.groundTilePositions = [];
+    this.isOnBoat = false; // Add this flag in the create method
   }
 
   preload() {
@@ -25,7 +27,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
   }
 
   create() {
-    this.isOnBoat = false; // Add this flag in the create method
+   
     //resize canvas when coming from scene-two
     const gameConfig = this.sys.game.config;
             // Create the weather effects
@@ -255,8 +257,16 @@ this.disembarkText.setVisible(false); // Initially invisible
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
-    
-      
+  // Get ground layer tile positions
+  this.groundTilePositions = this.getGroundLayerTilePositions();
+
+  if (this.groundTilePositions && this.groundTilePositions.length > 0) {
+      // Calculate shortest distance
+      const shortestDistance = this.calculateShortestDistanceToGround();
+      console.log('Shortest Distance to Ground:', shortestDistance);
+  } else {
+      console.error('No ground layer tile positions found.');
+  }
   }
 
     update() {
@@ -271,6 +281,25 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       this.physics.collide(this.protagonist, this.walls, () => {
         console.log("hit");
     }, null, this);
+
+
+
+    if (this.groundTilePositions.length > 0 && this.isOnBoat == true) {
+      // Calculate shortest distance to ground
+      const shortestDistance = this.calculateShortestDistanceToGround();
+  
+      // Check if the boat is close to the ground layer
+      if (shortestDistance <= 143) {  // Adjust the distance threshold as needed
+          this.disembarkText.setVisible(true);
+          this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 50); // Slightly above the boat
+          console.log("muumi");
+      } else {
+          this.disembarkText.setVisible(false);
+      }
+  }
+  
+
+
      // Decrease hunger level over time
      this.hungerLevel -= this.hungerDecreaseRate;
      if (this.hungerLevel < 0) {
@@ -331,8 +360,7 @@ if (distanceToBoat <= 200 && this.isOnBoat == false) {
     this.boardBoatText.setVisible(false);
 }
 
-// Update "disembark" text position to follow the boatOnBoard
-this.disembarkText.setPosition(3300, 200); // Slightly above the boat
+
 
 // Calculate the distance to the nearest ground tile
 const groundTiles = this.groundLayer.getTilesWithinWorldXY(this.boatOnBoard.x, this.boatOnBoard.y - 50, 64, 64);
@@ -343,27 +371,8 @@ groundTiles.forEach(tile => {
         closestDistance = distance;
     }
 });
-this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 30); // Slightly above the boat
-console.log(closestDistance)
-// Display "disembark" text if the boat is close to the ground layer
-//console.log(groundTiles)
-if (closestDistance <= 50 && this.isOnBoat == true) {
-    this.disembarkText.setVisible(true);
 
-    // Check if the player presses the "f" key to disembark
-    if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
-        this.boatOnBoard.setVisible(false);
-        this.protagonist.setPosition(this.boatOnBoard.x, this.boatOnBoard.y);
-        this.protagonist.setVisible(true);
 
-        // Set camera to follow the protagonist again
-        this.cameras.main.startFollow(this.protagonist);
-
-        console.log("Disembarked the boat");
-    }
-} else {
-    this.disembarkText.setVisible(false);
-}
 if(this.isOnBoat==false){
     // Handle keyboard input..
     if (this.cursors.up.isDown) {
@@ -503,4 +512,39 @@ updateHungerBarPosition() {
     this.hungerBar.setPosition(camera.scrollX + screenWidth - 210, camera.scrollY + 25);
     this.hungerText.setPosition(camera.scrollX + screenWidth - 110, camera.scrollY + 35);
 }
+getGroundLayerTilePositions() {
+  const tilePositions = [];
+
+  // Get the bounds of the ground layer
+  const layerWidth = this.groundLayer.width;
+  const layerHeight = this.groundLayer.height;
+
+  // Iterate through each tile in the ground layer
+  for (let y = 0; y < layerHeight; y++) {
+      for (let x = 0; x < layerWidth; x++) {
+          const tile = this.groundLayer.getTileAt(x, y);
+          if (tile) {
+              tilePositions.push({ x: tile.getCenterX(), y: tile.getCenterY() });
+          }
+      }
+  }
+
+  return tilePositions;
+}
+
+calculateShortestDistanceToGround() {
+  let shortestDistance = Infinity;
+  const boatX = this.boatOnBoard.x;
+  const boatY = this.boatOnBoard.y;
+
+  this.groundTilePositions.forEach(tilePos => {
+      const distance = Phaser.Math.Distance.Between(boatX, boatY, tilePos.x, tilePos.y);
+      if (distance < shortestDistance) {
+          shortestDistance = distance;
+      }
+  });
+
+  return shortestDistance;
+}
+
 }
