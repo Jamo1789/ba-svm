@@ -112,9 +112,9 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     this.hungerBox.setDepth(1000);
     this.hungerBar.setDepth(1001);
     this.hungerText.setDepth(1002);
-this.protagonist.setDepth(4);
-this.boat.setDepth(4);
-this.boatOnBoard.setDepth(4);
+    this.protagonist.setDepth(4);
+    this.boat.setDepth(4);
+    this.boatOnBoard.setDepth(4);
     // Adjust the depth of layers as needed
     groundLayer.setDepth(1);
     waterLayer.setDepth(0);
@@ -235,7 +235,10 @@ waterLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 
 // Set up collision detection for walls layer
 walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
+// Set up collision detection for grass layer
+grassLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
 this.physics.add.collider(this.boatOnBoard, this.groundLayer);
+this.physics.add.collider(this.boatOnBoard, this.grassLayer);
 groundLayer.setCollisionBetween(1,1000, true);
 
 // Add colliders for the protagonist with both layers
@@ -290,13 +293,19 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   
       // Check if the boat is close to the ground layer
       if (shortestDistance <= 143) {  // Adjust the distance threshold as needed
-          this.disembarkText.setVisible(true);
-          this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 50); // Slightly above the boat
-          console.log("muumi");
+        this.disembarkText.setVisible(true);
+        this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 50); // Slightly above the boat
+        console.log("muumi");
+  
+        // Check if the player presses the "f" key
+        if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
+          this.disembark();
+          this.cameras.main.startFollow(this.protagonist);
+        }
       } else {
-          this.disembarkText.setVisible(false);
+        this.disembarkText.setVisible(false);
       }
-  }
+    }
   
 
 
@@ -545,6 +554,38 @@ calculateShortestDistanceToGround() {
   });
 
   return shortestDistance;
+}
+disembark() {
+  // Find the nearest ground tile position
+  let nearestGroundTile = this.groundTilePositions[0];
+  let minDistance = Phaser.Math.Distance.Between(this.boatOnBoard.x, this.boatOnBoard.y, nearestGroundTile.x, nearestGroundTile.y);
+
+  this.groundTilePositions.forEach(tile => {
+    let distance = Phaser.Math.Distance.Between(this.boatOnBoard.x, this.boatOnBoard.y, tile.x, tile.y);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestGroundTile = tile;
+    }
+  });
+
+  // Relocate the boat next to the ground tile
+  this.boat.setPosition(nearestGroundTile.x + 50, nearestGroundTile.y); // Adjust the offset as needed
+
+  // Relocate the protagonist to the ground tile
+  this.protagonist.setPosition(nearestGroundTile.x, nearestGroundTile.y - 50);
+
+  // Hide the boatOnBoard asset
+  this.boatOnBoard.setVisible(false);
+  this.boatOnBoard.body.enable = true; // Disable physics on boatOnBoard if necessary
+  this.boat.setVisible(true);
+
+  // Show the protagonist
+  this.protagonist.setVisible(true);
+  this.protagonist.body.enable = true;
+
+  // Reset the isOnBoat flag
+  this.isOnBoat = false;
+  this.disembarkText.setVisible(false);
 }
 
 }
