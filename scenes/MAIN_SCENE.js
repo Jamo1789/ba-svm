@@ -451,7 +451,9 @@ if(this.isOnBoat==false){
 this.logProtagonistTileIndex()
 //this.handleEnterHut()
 
-
+if (this.isOnBoat == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T), 500)) {
+  this.startFishing();
+}
 
 }
 
@@ -586,6 +588,9 @@ disembark() {
   // Reset the isOnBoat flag
   this.isOnBoat = false;
   this.disembarkText.setVisible(false);
+}
+startFishing() {
+  this.scene.start('FISHING_SCENE');
 }
 
 }
