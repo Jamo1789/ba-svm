@@ -67,14 +67,20 @@ export default class PreloadScene extends Phaser.Scene {
         });
 
    // Load spritesheet for the protagonist
-   this.load.spritesheet('protagonist', '/assets/mainCH2.png', { frameWidth: 100, frameHeight: 100 });
-   this.load.spritesheet('enemy', '/assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
-   this.load.spritesheet('boat', '/assets/boat.png', { frameWidth: 200, frameHeight: 200 });
-   this.load.spritesheet('boatOnBoard', '/assets/boatOnBoard.png', { frameWidth: 200, frameHeight: 250 });
+   this.load.spritesheet('protagonist', '../assets/mainCH2.png', { frameWidth: 100, frameHeight: 100 });
+   this.load.spritesheet('enemy', '../assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
+   this.load.spritesheet('boat', '../assets/boat.png', { frameWidth: 200, frameHeight: 200 });
+   this.load.spritesheet('boatOnBoard', '../assets/boatOnBoard.png', { frameWidth: 200, frameHeight: 250 });
+   this.load.image('hook', '../assets/hook2.png');
+   this.load.image('pike', '../assets/pike_game.png');
+   this.load.image('roach', '../assets/roach_game.png');
+   this.load.image('zander', '../assets/roach_game.png');
+   this.load.image('perch', '../assets/roach_game.png');
+   this.load.image('underwater_bg', '/assets/underwater_bg.png');
   
    this.load.audio('light-rain', '../assets/light-rain.mp3');
    this.load.audio('rain-inside', '../assets/rain-inside.mp3');
-  
+   this.load.audio('catch', '../assets/score_sound.wav');
    
  
    // Load tileset and tilemap
