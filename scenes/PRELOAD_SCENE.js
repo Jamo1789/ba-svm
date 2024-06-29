@@ -76,6 +76,7 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.image('roach', '../assets/roach_game.png');
    this.load.image('zander', '../assets/roach_game.png');
    this.load.image('perch', '../assets/roach_game.png');
+   this.load.image('fish', '../assets/fish.png');
    this.load.image('underwater_bg', '/assets/underwater_bg.png');
   
    this.load.audio('light-rain', '../assets/light-rain.mp3');
