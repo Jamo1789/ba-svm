@@ -26,7 +26,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
     
   }
 
-  create() {
+  create(data) {
    
     //resize canvas when coming from scene-two
     const gameConfig = this.sys.game.config;
@@ -263,6 +263,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   // Get ground layer tile positions
   this.groundTilePositions = this.getGroundLayerTilePositions();
 
+
   if (this.groundTilePositions && this.groundTilePositions.length > 0) {
       // Calculate shortest distance
       const shortestDistance = this.calculateShortestDistanceToGround();
@@ -270,6 +271,32 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   } else {
       console.error('No ground layer tile positions found.');
   }
+  console.log("orginal boatonboard" + " " + this.boatOnBoard.x + " " + this.boatOnBoard.y)
+     // If there's data passed from the fishing scene, update the player's position
+     if (data && data.playerPosition) {
+      this.boatOnBoard.setPosition(data.playerPosition.x, data.playerPosition.y);
+      // Destroy protagonist and boat
+              this.protagonist.setVisible(false);
+              this.boat.setVisible(false);
+
+              // Make the boatOnBoard visible and start its animation
+              this.boatOnBoard.setVisible(true);
+              this.isOnBoat=true;
+             // Set camera to follow the new boat
+             this.cameras.main.startFollow(this.boatOnBoard);
+
+              console.log("Boarded the boat");
+  }
+    this.input.keyboard.on('keydown-T', () => {
+      // Store player's current position
+      const playerPosition = {
+          x: this.boatOnBoard.x,
+          y: this.boatOnBoard.y
+      };
+
+      // Start the fishing scene and pass the player's position
+      this.scene.start('FISHING_SCENE', { playerPosition: playerPosition });
+    });
   }
 
     update() {

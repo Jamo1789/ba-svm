@@ -8,7 +8,9 @@ export default class FISHING_SCENE extends Phaser.Scene {
 
   preload() {}
 
-  create() {
+  create(data) {
+           // Store the player's starting position passed from MAIN_SCENE
+           this.startingPosition = data.playerPosition;
           
             // Add the underwater background image and resize it
             const canvas_w = this.game.canvas.width;
@@ -89,6 +91,12 @@ export default class FISHING_SCENE extends Phaser.Scene {
 
         // Add catch sound
         this.catchSound = this.sound.add('catch');
+
+        // Add event listener for returning to MAIN_SCENE
+        this.input.keyboard.on('keydown-T', () => {
+          // Return to MAIN_SCENE and pass the player's starting position back
+          this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition });
+      });
 
   }
 
