@@ -10,6 +10,10 @@ export default class FISHING_SCENE extends Phaser.Scene {
   preload() {}
 
   create(data) {
+              if (data && data.fishCaught !== undefined) {
+                this.fishCaught = data.fishCaught;
+                console.log("fis data passed")
+            }
           // Store the player's starting position passed from MAIN_SCENE
             this.startingPosition = data.playerPosition;
             this.fishCaught = data.fishCaught || 0;
@@ -74,7 +78,7 @@ export default class FISHING_SCENE extends Phaser.Scene {
             }
             // Initialize the score counter with bucket size
             this.score = 0;
-            this.scoreText = this.add.text(16, 16, `Caught: 0 / ${this.bucketSize}`, { font: '32px Arial', fill: '#FFFFFF' }).setScrollFactor(0);
+            this.scoreText = this.add.text(16, 16, `Caught: ${this.fishCaught} / ${this.bucketSize}`, { font: '32px Arial', fill: '#FFFFFF' }).setScrollFactor(0);
             // Add event listener for mouse move
             this.input.on('pointermove', (pointer) => {
               if (this.isDragging) {
@@ -143,11 +147,11 @@ export default class FISHING_SCENE extends Phaser.Scene {
 
       this.fishGroup.getChildren().forEach((fish) => {
         if (fish.active && Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), fish.getBounds())) {
-          if (this.score < this.bucketSize) {
+          if (this.fishCaught < this.bucketSize) {
             fish.destroy();
-            this.score += 1;
+            
             this.fishCaught += 1;
-            this.scoreText.setText(`Caught: ${this.score} / ${this.bucketSize}`);
+            this.scoreText.setText(`Caught: ${this.fishCaught} / ${this.bucketSize}`);
             this.catchSound.play();
           }
         }

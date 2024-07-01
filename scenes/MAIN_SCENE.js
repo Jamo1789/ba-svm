@@ -303,7 +303,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       };
 
       // Start the fishing scene and pass the player's position
-      this.scene.start('FISHING_SCENE', { playerPosition: playerPosition });
+      this.scene.start('FISHING_SCENE', { playerPosition: playerPosition, fishCaught: this.fishCaught  });
     });
   }
 
