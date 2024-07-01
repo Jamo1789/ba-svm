@@ -4,13 +4,16 @@ export default class FISHING_SCENE extends Phaser.Scene {
   constructor() {
     super({ key: "FISHING_SCENE" });
     this.bucketSize = 3; // Maximum bucket size
+    this.fishCaught = 0;
   }
 
   preload() {}
 
   create(data) {
-           // Store the player's starting position passed from MAIN_SCENE
-           this.startingPosition = data.playerPosition;
+          // Store the player's starting position passed from MAIN_SCENE
+            this.startingPosition = data.playerPosition;
+            this.fishCaught = data.fishCaught || 0;
+            this.bucketSize = data.bucketSize || 3;
           
             // Add the underwater background image and resize it
             const canvas_w = this.game.canvas.width;
@@ -93,9 +96,10 @@ export default class FISHING_SCENE extends Phaser.Scene {
         this.catchSound = this.sound.add('catch');
 
         // Add event listener for returning to MAIN_SCENE
+       
         this.input.keyboard.on('keydown-T', () => {
-          // Return to MAIN_SCENE and pass the player's starting position back
-          this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition });
+          // Return to MAIN_SCENE and pass the updated number of fish caught back
+          this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition, fishCaught: this.fishCaught });
       });
 
   }
@@ -142,6 +146,7 @@ export default class FISHING_SCENE extends Phaser.Scene {
           if (this.score < this.bucketSize) {
             fish.destroy();
             this.score += 1;
+            this.fishCaught += 1;
             this.scoreText.setText(`Caught: ${this.score} / ${this.bucketSize}`);
             this.catchSound.play();
           }

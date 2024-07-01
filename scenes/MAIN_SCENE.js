@@ -5,7 +5,7 @@ import RainFX from '../assets/objects/weather.js';
 import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, dockIndex } from '../config.js';
 import { SCENE_KEYS } from "./scene-keys.js";
 import HUT_SCENE from './HUT_SCENE.js'; // Import SceneTwo from scene-two.js
-
+import FISHING_SCENE from './FISHING_SCENE';
 let last_direction;
 let spirit_terrain;
 
@@ -17,6 +17,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.hungerDecreaseRate = 0.01; // Rate at which hunger level decreases
     this.groundTilePositions = [];
     this.isOnBoat = false; // Add this flag in the create method
+    this.bucketSize = 3;
+    this.fishCaught = 0;
   }
 
   preload() {
@@ -27,7 +29,11 @@ export default class MAIN_SCENE extends Phaser.Scene {
   }
 
   create(data) {
-   
+         // If there's data passed from the fishing scene, update the number of fish caught
+    if (data && data.fishCaught !== undefined) {
+          this.fishCaught = data.fishCaught;
+          console.log("fis data passed")
+      }
     //resize canvas when coming from scene-two
     const gameConfig = this.sys.game.config;
             // Create the weather effects
@@ -53,7 +59,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.boat.setOrigin(0.5, 0.5);
     
     this.boatOnBoard = this.physics.add.sprite(this.boat.x, this.boat.y, 'boatOnBoard');
-    
+    // Display the bucket size text
+    this.bucketText = this.add.text(16, 16, `Caught: ${this.fishCaught} / ${this.bucketSize}`, { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
     // Rocking animation using tweens
     this.tweens.add({
         targets: this.boat,
@@ -110,6 +117,7 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     });
     this.hungerText.setOrigin(0.5, 0.5);
     this.hungerBox.setDepth(1000);
+    this.bucketText.setDepth(1000)
     this.hungerBar.setDepth(1001);
     this.hungerText.setDepth(1002);
     this.protagonist.setDepth(4);
