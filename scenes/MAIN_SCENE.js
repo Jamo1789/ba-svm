@@ -295,20 +295,25 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
 
               console.log("Boarded the boat");
   }
-    this.input.keyboard.on('keydown-T', () => {
-      // Store player's current position
-      const playerPosition = {
-          x: this.boatOnBoard.x,
-          y: this.boatOnBoard.y
-      };
+   // Add event listener for pressing "T" to switch to fishing scene
+   this.input.keyboard.on('keydown-T', () => {
+    if (this.isOnBoat) {
+        const playerPosition = {
+            x: this.boatOnBoard.x,
+            y: this.boatOnBoard.y
+        };
 
-      // Start the fishing scene and pass the player's position
-      this.scene.start('FISHING_SCENE', { playerPosition: playerPosition, fishCaught: this.fishCaught  });
-    });
+        this.scene.start('FISHING_SCENE', { playerPosition: playerPosition, fishCaught: this.fishCaught, bucketSize: this.bucketSize });
+    } else {
+        console.log("Player is not on the boat.");
+    }
+});
+
+
   }
 
     update() {
-    
+    console.log(this.isOnBoat); //check this
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);
@@ -485,10 +490,12 @@ if(this.isOnBoat==false){
       }
   }
 this.logProtagonistTileIndex()
-//this.handleEnterHut()
 
 if (this.isOnBoat == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T), 500)) {
   this.startFishing();
+}
+else{
+  console.log("not on boat")
 }
 
 }
