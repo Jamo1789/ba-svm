@@ -4,6 +4,8 @@ let last_direction;
 export default class HUT_SCENE extends Phaser.Scene {
     constructor() {
         super({ key: "HUT_SCENE" });
+        this.bucketSize = 3; // Maximum bucket size
+        this.fishCaught = 0;
     }
 
     // Initialize the scene with data from the previous scene
@@ -18,7 +20,11 @@ export default class HUT_SCENE extends Phaser.Scene {
 
     }
 
-    create() {
+    create(data) {
+        if (data && data.fishCaught !== undefined) {
+          this.fishCaught = data.fishCaught;
+          console.log("fis data passed")
+    }
         const gameConfig = this.sys.game.config;
     
         // Update canvas size if needed
@@ -122,6 +128,8 @@ export default class HUT_SCENE extends Phaser.Scene {
         
         wallsLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
         this.physics.add.collider(this.protagonist, this.wallsLayer);
+        // Display the bucket size text
+    this.bucketText = this.add.text(16, 16, `Caught: ${this.fishCaught} / ${this.bucketSize}`, { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
     }
     
 

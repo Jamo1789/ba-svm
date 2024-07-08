@@ -371,7 +371,8 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
         if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
             // Launch Scene Two
             this.scene.start(SCENE_KEYS.HUT_SCENE, {
-              "message": "Entered hut" 
+              playerPosition: this.playerPosition,
+              fishCaught: this.fishCaught 
             });
             this.shutdown(); // Manually call the shutdown method
         }
