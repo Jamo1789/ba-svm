@@ -69,13 +69,15 @@ export default class FISHING_SCENE extends Phaser.Scene {
             this.fishGroup = this.add.group();
             const numFish = Phaser.Math.Between(5, 15);
             for (let i = 0; i < numFish; i++) {
-                const fishInfo = fishData[Phaser.Math.Between(0, fishData.length - 1)];
-                const y = Phaser.Math.Between(50, canvasHeight - 50);
-                const fish = this.add.image(Phaser.Math.Between(50, canvasWidth - 50), y, fishInfo.key).setDepth(1);
-                fish.setDisplaySize(fishInfo.width, fishInfo.height);
-                fish.speed = Phaser.Math.Between(50, 100) * (Math.random() < 0.5 ? 1 : -1);
-                this.fishGroup.add(fish);
-            }
+              const fishInfo = fishData[Phaser.Math.Between(0, fishData.length - 1)];
+              const y = Phaser.Math.Between(50, canvas_h - 50);
+              const fish = this.add.image(Phaser.Math.Between(50, canvas_w - 50), y, fishInfo.key).setDepth(1);
+              fish.setDisplaySize(fishInfo.width, fishInfo.height);
+              fish.speed = Phaser.Math.Between(50, 100) * (Math.random() < 0.5 ? 1 : -1);
+              this.fishGroup.add(fish);
+              fish.spawnTime = this.time.now;
+              fish.swimOut = false;
+          }
             // Initialize the score counter with bucket size
             this.score = 0;
             this.scoreText = this.add.text(16, 16, `Caught: ${this.fishCaught} / ${this.bucketSize}`, { font: '32px Arial', fill: '#FFFFFF' }).setScrollFactor(0);
@@ -115,12 +117,22 @@ export default class FISHING_SCENE extends Phaser.Scene {
   }
 
   // Move fish horizontally
+  const currentTime = this.time.now;
   this.fishGroup.getChildren().forEach((fish) => {
-      if (fish.active) { // Ensure the fish is still active
-          fish.x += fish.speed * 0.016; // Adjust the speed as needed
-          if (fish.x < 0 || fish.x > this.game.canvas.width) {
-              fish.speed *= -1; // Reverse direction at screen edges
-              fish.setFlipX(fish.speed < 0); // Adjust flip based on new speed
+      if (fish.active) {
+          if (!fish.swimOut && currentTime - fish.spawnTime >= 30000) { // 5 seconds for example
+              fish.speed *= 2; // Increase speed to simulate swimming out
+              fish.swimOut = true;
+          }
+
+          fish.x += fish.speed * 0.016; 
+          if (fish.swimOut && (fish.x < 0 || fish.x > this.game.canvas.width)) {
+              fish.destroy();
+          } else {
+              if (fish.x < 0 || fish.x > this.game.canvas.width) {
+                  fish.speed *= -1; 
+                  fish.setFlipX(fish.speed < 0); 
+              }
           }
       }
   });
