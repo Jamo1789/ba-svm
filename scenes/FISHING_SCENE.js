@@ -5,6 +5,7 @@ export default class FISHING_SCENE extends Phaser.Scene {
     super({ key: "FISHING_SCENE" });
     this.bucketSize = 3; // Maximum bucket size
     this.fishCaught = 0;
+    this.caughtFish = []; // Array to store caught fish details
   }
 
   preload() {}
@@ -57,11 +58,11 @@ export default class FISHING_SCENE extends Phaser.Scene {
 
             // Array of fish keys
             const fishData = [
-                { key: 'fish', width: 32, height: 32 },
-                { key: 'perch', width: 32, height: 32 },
-                { key: 'pike', width: 100, height: 100 },
-                { key: 'roach', width: 35, height: 35 },
-                { key: 'zander', width: 40, height: 40 }
+              { key: 'fish', width: 32, height: 32, value: 10 },
+              { key: 'perch', width: 32, height: 32, value: 15 },
+              { key: 'pike', width: 100, height: 100, value: 25 },
+              { key: 'roach', width: 35, height: 35, value: 5 },
+              { key: 'zander', width: 40, height: 40, value: 20 }
             ];
             
 
@@ -74,9 +75,13 @@ export default class FISHING_SCENE extends Phaser.Scene {
               const fish = this.add.image(Phaser.Math.Between(50, canvas_w - 50), y, fishInfo.key).setDepth(1);
               fish.setDisplaySize(fishInfo.width, fishInfo.height);
               fish.speed = Phaser.Math.Between(50, 100) * (Math.random() < 0.5 ? 1 : -1);
-              this.fishGroup.add(fish);
+              fish.value = fishInfo.value;
+              fish.type = fishInfo.key;
               fish.spawnTime = this.time.now;
               fish.swimOut = false;
+              this.fishGroup.add(fish);
+              
+           
           }
             // Initialize the score counter with bucket size
             this.score = 0;
@@ -105,12 +110,13 @@ export default class FISHING_SCENE extends Phaser.Scene {
        
         this.input.keyboard.on('keydown-T', () => {
           // Return to MAIN_SCENE and pass the updated number of fish caught back
-          this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition, fishCaught: this.fishCaught });
+          this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition, fishCaught: this.fishCaught, caughtFish: this.caughtFish });
       });
 
   }
 
   update() {
+    console.log(this.caughtFish)
     // If you want to see the player falling without the camera follow, you can initially stop following
     if (!this.cameras.main._follow) {
       this.cameras.main.scrollY += 1; // Adjust the scroll speed as needed to see the falling effect
@@ -165,6 +171,7 @@ export default class FISHING_SCENE extends Phaser.Scene {
             this.fishCaught += 1;
             this.scoreText.setText(`Caught: ${this.fishCaught} / ${this.bucketSize}`);
             this.catchSound.play();
+            this.caughtFish.push({ type: fish.type, value: fish.value });
           }
         }
       });
