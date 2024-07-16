@@ -1,5 +1,5 @@
 import { SCENE_KEYS } from "./scene-keys";
-import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, dockIndex } from '../config.js';
+import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, dockIndex } from '../config.js';
 let last_direction;
 export default class HUT_SCENE extends Phaser.Scene {
     constructor() {

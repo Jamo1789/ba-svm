@@ -2,7 +2,7 @@ import "../style.css";
 import Phaser from "phaser";
 import RainFX from '../assets/objects/weather.js';
 // main.js
-import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, collidableTileIndexes, dockIndex } from '../config.js';
+import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, dockIndex } from '../config.js';
 import { SCENE_KEYS } from "./scene-keys.js";
 import HUT_SCENE from './HUT_SCENE.js'; // Import SceneTwo from scene-two.js
 import FISHING_SCENE from './FISHING_SCENE';
@@ -235,16 +235,16 @@ waterLayer.renderDebug = true;
  this.transportlayer = transportlayer;
 
  
- collidableTileIndexes.forEach(index => {
-  map.setCollision(index, true, this.walls);
-});
+
 // Set up collision detection for water layer
-waterLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
+waterLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
 // Set up collision detection for walls layer
-walls.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
+walls.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 // Set up collision detection for grass layer
-grassLayer.setCollisionBetween(1, 1000, true); // Adjust tile indexes as needed
+grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
+stoneLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
+
 this.physics.add.collider(this.boatOnBoard, this.groundLayer);
 this.physics.add.collider(this.boatOnBoard, this.grassLayer);
 groundLayer.setCollisionBetween(1,1000, true);
@@ -252,7 +252,9 @@ groundLayer.setCollisionBetween(1,1000, true);
 // Add colliders for the protagonist with both layers
 
 this.physics.add.collider(this.waterLayer, this.protagonist);
-this.physics.add.collider(this.protagonist, this.walls);
+this.physics.add.collider(this.protagonist, this.stoneLayer);
+this.physics.add.collider(this.protagonist, this.grassLayer);
+//this.physics.add.collider(this.protagonist, this.walls);
 this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
 this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
@@ -309,6 +311,10 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
     }
 });
 
+    // Set camera bounds to match the game world bounds
+    this.cameras.main.setBounds(0, 0);
+     // Make the camera follow the player
+
 
   }
 
@@ -359,7 +365,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
      // Call this to update the position of the hunger bar
      this.updateHungerBarPosition();
       //console.log(this.waterLayer.culledTiles[0])
-      const tileIndex112 = this.transportlayer.findByIndex(940);
+      const tileIndex112 = this.transportlayer.findByIndex(2274);
       const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
       const tileCenterY = this.transportlayer.tileToWorldY(tileIndex112.y);
       const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
