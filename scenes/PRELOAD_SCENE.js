@@ -71,6 +71,7 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.spritesheet('enemy', '../assets/waterspirit.png', { frameWidth: 150, frameHeight: 150 });
    this.load.spritesheet('boat', '../assets/boat.png', { frameWidth: 200, frameHeight: 200 });
    this.load.spritesheet('boatOnBoard', '../assets/boatOnBoard.png', { frameWidth: 200, frameHeight: 250 });
+   this.load.spritesheet('fishermansHut', '../assets/Hut.png', { frameWidth: 429, frameHeight: 398 });
    this.load.image('hook', '../assets/hook2.png');
    this.load.image('pike', '../assets/pike_game.png');
    this.load.image('roach', '../assets/roach_game.png');

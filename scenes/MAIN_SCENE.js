@@ -2,7 +2,7 @@ import "../style.css";
 import Phaser from "phaser";
 import RainFX from '../assets/objects/weather.js';
 // main.js
-import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, dockIndex } from '../config.js';
+import { characterPositionInWorldMap, sizes, hitboxWidth, hitboxHeight, hitboxOffsetX, hitboxOffsetY, dockIndex, huthitboxX, huthitboxY, hutboxOffsetY, hutboxOffsetX } from '../config.js';
 import { SCENE_KEYS } from "./scene-keys.js";
 import HUT_SCENE from './HUT_SCENE.js'; // Import SceneTwo from scene-two.js
 import FISHING_SCENE from './FISHING_SCENE';
@@ -56,6 +56,11 @@ export default class MAIN_SCENE extends Phaser.Scene {
 
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
+    this.fishermansHut = this.physics.add.sprite(characterPositionInWorldMap + 500, 250, 'fishermansHut');
+    this.fishermansHut.body.setSize(huthitboxX, huthitboxY);
+    this.fishermansHut.body.setOffset(hutboxOffsetX, hutboxOffsetY);
+    this.fishermansHut.setImmovable(true); // Make the hut immovable
+    this.fishermansHut.body.moves = false; // Ensure the hut does not move at all
     this.boat.setOrigin(0.5, 0.5);
     
     this.boatOnBoard = this.physics.add.sprite(this.boat.x, this.boat.y, 'boatOnBoard');
@@ -91,11 +96,6 @@ const groundLayer = map.createLayer('Groundlayer', darkTileset, 0, 0);
 const grassLayer = map.createLayer('grass_and_tree_layer', darkTileset, 0, 0);
 const stoneLayer = map.createLayer('stones_n_stuff', darkTileset, 0, 0);
 
-// Create hut layer using the hut tileset
-const hutLayer = map.createLayer('hutLayer', darkTileset, 0, 0);
-const transportlayer = map.createLayer('transportlayer', darkTileset, 0, 0);
-
-const walls = map.createLayer('walls', darkTileset, 0, 0);
 const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlayer initialized last.
     // Create hunger level progress bar
     this.hungerBox = this.add.graphics();
@@ -121,6 +121,7 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     this.hungerBar.setDepth(1001);
     this.hungerText.setDepth(1002);
     this.protagonist.setDepth(4);
+    this.fishermansHut.setDepth(3);
     this.boat.setDepth(4);
     this.boatOnBoard.setDepth(4);
     // Adjust the depth of layers as needed
@@ -128,9 +129,7 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     waterLayer.setDepth(0);
     grassLayer.setDepth(1);
     stoneLayer.setDepth(2);
-    hutLayer.setDepth(30);
-    walls.setDepth(2);
-    transportlayer.setDepth(2);
+
 // Assuming groundLayer is already created and added
 
     this.anims.create({
@@ -230,17 +229,12 @@ waterLayer.renderDebug = true;
  this.waterLayer = waterLayer;
  this.grassLayer = grassLayer;
  this.stoneLayer = stoneLayer;
- this.hutLayer = hutLayer;
- this.walls = walls;
- this.transportlayer = transportlayer;
 
- 
 
 // Set up collision detection for water layer
 waterLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
-// Set up collision detection for walls layer
-walls.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
+
 // Set up collision detection for grass layer
 grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 stoneLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
@@ -315,7 +309,8 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
     this.cameras.main.setBounds(0, 0);
      // Make the camera follow the player
 
-
+   // Add collider between protagonist and fisherman's hut
+   this.physics.add.collider(this.protagonist, this.fishermansHut, this.onProtagonistHutCollision, null, this);
   }
 
     update() {
@@ -364,16 +359,12 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   
      // Call this to update the position of the hunger bar
      this.updateHungerBarPosition();
-      //console.log(this.waterLayer.culledTiles[0])
-      const tileIndex112 = this.transportlayer.findByIndex(2274);
-      const tileCenterX = this.transportlayer.tileToWorldX(tileIndex112.x);
-      const tileCenterY = this.transportlayer.tileToWorldY(tileIndex112.y);
-      const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
+
       const distanceToBoat = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.boat.x, this.boat.y);
       
       // Update "Enter hut" text position to follow the player
       this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y);
-      
+      /*
       if (distance <= 50) {
         // Display "Enter hut" text if the player is close to the hut
         this.enterHutText.setVisible(true);
@@ -391,7 +382,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
         // Hide "Enter hut" text if the player is not close to the hut
         this.enterHutText.setVisible(false);
     }
-
+*/
 // Update "Board the boat" text position to follow the player
 this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
 
@@ -640,6 +631,11 @@ disembark() {
 }
 startFishing() {
   this.scene.start('FISHING_SCENE');
+}
+// Define the collision callback
+onProtagonistHutCollision(protagonist, fishermansHut) {
+  // Handle what happens when the protagonist collides with the fisherman's hut
+  console.log('Protagonist collided with Fisherman\'s Hut');
 }
 
 }
