@@ -56,7 +56,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
 
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
-    this.fishermansHut = this.physics.add.sprite(characterPositionInWorldMap + 500, 250, 'fishermansHut');
+    this.fishermansHut = this.physics.add.sprite(characterPositionInWorldMap + 500, 190, 'fishermansHut');
     this.fishermansHut.body.setSize(huthitboxX, huthitboxY);
     this.fishermansHut.body.setOffset(hutboxOffsetX, hutboxOffsetY);
     this.fishermansHut.setImmovable(true); // Make the hut immovable
@@ -364,6 +364,12 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       
       // Update "Enter hut" text position to follow the player
       this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y);
+      // Check the distance between the protagonist and the fisherman's hut
+    const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.fishermansHut.x, this.fishermansHut.y);
+   
+    if (distance > 250) { // Adjust the threshold as needed
+      this.enterHutText.setVisible(false);
+  } 
       /*
       if (distance <= 50) {
         // Display "Enter hut" text if the player is close to the hut
@@ -636,6 +642,7 @@ startFishing() {
 onProtagonistHutCollision(protagonist, fishermansHut) {
   // Handle what happens when the protagonist collides with the fisherman's hut
   console.log('Protagonist collided with Fisherman\'s Hut');
+  this.enterHutText.setVisible(true);
 }
 
 }

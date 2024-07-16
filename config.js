@@ -10,9 +10,9 @@ export const hitboxOffsetX = 40; // Offset from the left edge of the sprite
 export const hitboxOffsetY = 80; // Offset from the top edge of the sprite
 
 export const huthitboxX = 354;
-export const huthitboxY = 200;
+export const huthitboxY = 250;
 export const hutboxOffsetX = 20;
-export const hutboxOffsetY = 130;
+export const hutboxOffsetY = 90;
 
 
 export const waterIndex = [
