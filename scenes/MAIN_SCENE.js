@@ -19,6 +19,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.isOnBoat = false; // Add this flag in the create method
     this.bucketSize = 3;
     this.fishCaught = 0;
+    this.hutAvailable = false;
   }
 
   preload() {
@@ -271,10 +272,8 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   if (this.groundTilePositions && this.groundTilePositions.length > 0) {
       // Calculate shortest distance
       const shortestDistance = this.calculateShortestDistanceToGround();
-      console.log('Shortest Distance to Ground:', shortestDistance);
-  } else {
-      console.error('No ground layer tile positions found.');
-  }
+      
+  } 
   console.log("orginal boatonboard" + " " + this.boatOnBoard.x + " " + this.boatOnBoard.y)
      // If there's data passed from the fishing scene, update the player's position
      if (data && data.playerPosition) {
@@ -369,7 +368,18 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
    
     if (distance > 250) { // Adjust the threshold as needed
       this.enterHutText.setVisible(false);
-  } 
+      this.hutAvailable = false;
+  }
+  if (this.hutAvailable == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)){
+      // Launch Scene Two
+      this.scene.start(SCENE_KEYS.HUT_SCENE, {
+        playerPosition: this.playerPosition,
+        fishCaught: this.fishCaught 
+      });
+      this.shutdown(); // Manually call the shutdown method
+      }
+      
+  
       /*
       if (distance <= 50) {
         // Display "Enter hut" text if the player is close to the hut
@@ -643,6 +653,7 @@ onProtagonistHutCollision(protagonist, fishermansHut) {
   // Handle what happens when the protagonist collides with the fisherman's hut
   console.log('Protagonist collided with Fisherman\'s Hut');
   this.enterHutText.setVisible(true);
+  this.hutAvailable = true;
 }
 
 }

@@ -1,8 +1,9 @@
 import Phaser from "phaser";
+import { SCENE_KEYS } from "./scene-keys.js";
 
 export default class FISHING_SCENE extends Phaser.Scene {
   constructor() {
-    super({ key: "FISHING_SCENE" });
+    super(SCENE_KEYS.FISHING_SCENE);
     this.bucketSize = 3; // Maximum bucket size
     this.fishCaught = 0;
     this.caughtFish = []; // Array to store caught fish details
