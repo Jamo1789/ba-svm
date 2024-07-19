@@ -326,7 +326,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
     }, null, this);
 
 
-
+    this.checkProtagonistDistanceToStoneLayer();
     if (this.groundTilePositions.length > 0 && this.isOnBoat == true) {
       // Calculate shortest distance to ground
       const shortestDistance = this.calculateShortestDistanceToGround();
@@ -655,5 +655,26 @@ onProtagonistHutCollision(protagonist, fishermansHut) {
   this.enterHutText.setVisible(true);
   this.hutAvailable = true;
 }
+getAllTilesWithIndex(index) {
+  const tiles = [];
+  this.stoneLayer.forEachTile(tile => {
+      if (tile.index === index) {
+          tiles.push(tile);
+      }
+  });
+  return tiles;
+}
+
+checkProtagonistDistanceToStoneLayer() {
+  const tiles = this.getAllTilesWithIndex(2273);
+  tiles.forEach(tile => {
+      const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tile.pixelX + tile.width / 2, tile.pixelY + tile.height / 2);
+      if (distance < 50) {
+          console.log("kebab");
+      }
+  });
+}
+
+
 
 }
