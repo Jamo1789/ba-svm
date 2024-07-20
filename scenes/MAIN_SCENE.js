@@ -254,14 +254,17 @@ this.cameras.main.startFollow(this.protagonist);
 this.enterHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to enter the hut', { font: '24px Arial', fill: '#ffffff' });
 this.boardBoatText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to board the boat', { font: '24px Arial', fill: '#ffffff' });
 this.disembarkText = this.add.text(this.boatOnBoard.x, this.boatOnBoard.y, 'Press f to disembark', { font: '24px Arial', fill: '#ffffff' });
+this.missingboardtext = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to investigate', { font: '24px Arial', fill: '#ffffff' });
 
 this.enterHutText.setDepth(100);
 this.boardBoatText.setDepth(100);
 this.disembarkText.setDepth(100);
+this.missingboardtext.setDepth(100);
 this.enterHutText.setVisible(false);
 this.boardBoatText.setVisible(false);
 this.boatOnBoard.setVisible(false); // Initially invisible
 this.disembarkText.setVisible(false); // Initially invisible
+this.missingboardtext.setVisible(false); // Initially invisible
 console.log(this.protagonist.x + " " + this.protagonist.y)
         // Add shutdown event listener
         this.events.on('shutdown', this.shutdown, this);
@@ -313,7 +316,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   }
 
     update() {
-    console.log(this.isOnBoat); //check this
+  
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);
@@ -322,7 +325,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       // Reset velocity
       this.protagonist.setVelocity(0);
       this.physics.collide(this.protagonist, this.walls, () => {
-        console.log("hit");
+        
     }, null, this);
 
 
@@ -335,7 +338,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       if (shortestDistance <= 143) {  // Adjust the distance threshold as needed
         this.disembarkText.setVisible(true);
         this.disembarkText.setPosition(this.boatOnBoard.x, this.boatOnBoard.y - 50); // Slightly above the boat
-        console.log("muumi");
+        
   
         // Check if the player presses the "f" key
         if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
@@ -380,25 +383,6 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       }
       
   
-      /*
-      if (distance <= 50) {
-        // Display "Enter hut" text if the player is close to the hut
-        this.enterHutText.setVisible(true);
-        
-        // Check if the player presses the "f" key
-        if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
-            // Launch Scene Two
-            this.scene.start(SCENE_KEYS.HUT_SCENE, {
-              playerPosition: this.playerPosition,
-              fishCaught: this.fishCaught 
-            });
-            this.shutdown(); // Manually call the shutdown method
-        }
-    } else {
-        // Hide "Enter hut" text if the player is not close to the hut
-        this.enterHutText.setVisible(false);
-    }
-*/
 // Update "Board the boat" text position to follow the player
 this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
 
@@ -667,12 +651,25 @@ getAllTilesWithIndex(index) {
 
 checkProtagonistDistanceToStoneLayer() {
   const tiles = this.getAllTilesWithIndex(2273);
+  let isNearStoneLayer = false;
+
   tiles.forEach(tile => {
       const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tile.pixelX + tile.width / 2, tile.pixelY + tile.height / 2);
       if (distance < 50) {
-          console.log("kebab");
+          isNearStoneLayer = true;
+          this.missingboardtext.setPosition(this.protagonist.x, this.protagonist.y - 50);
+          this.missingboardtext.setVisible(true);
+      } else {
+          this.missingboardtext.setVisible(false);
       }
   });
+
+  // Check for "F" key press and if the protagonist is near the stone layer
+  if (isNearStoneLayer) {
+      this.input.keyboard.once('keydown-F', () => {
+          this.scene.start(SCENE_KEYS.MISSING_SCENE);
+      });
+  }
 }
 
 
