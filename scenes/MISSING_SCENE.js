@@ -41,6 +41,10 @@ export default class MISSING_SCENE extends Phaser.Scene {
         }).setOrigin(0.5, 1); // Set origin to (0.5, 1) to align text upwards
         
         this.showDialogLetterByLetter(this.dialogText, 50); // Adjust the speed (in ms) as needed
+        this.input.keyboard.on('keydown-T', () => {
+            // Return to MAIN_SCENE and pass the updated number of fish caught back
+            this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition, fishCaught: this.fishCaught, caughtFish: this.caughtFish });
+        });
     }
 
     showDialogLetterByLetter(text, speed) {
