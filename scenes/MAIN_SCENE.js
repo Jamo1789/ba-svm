@@ -330,6 +330,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
 
 
     this.checkProtagonistDistanceToStoneLayer();
+    this.checkProtagonistDistanceToTownRoad();
     if (this.groundTilePositions.length > 0 && this.isOnBoat == true) {
       // Calculate shortest distance to ground
       const shortestDistance = this.calculateShortestDistanceToGround();
@@ -671,7 +672,28 @@ checkProtagonistDistanceToStoneLayer() {
       });
   }
 }
+checkProtagonistDistanceToTownRoad(){
+  const tiles = this.getAllTilesWithIndex(2287); 
+  let isNearTownRoad = false;
 
+  tiles.forEach(tile => {
+      const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tile.pixelX + tile.width / 2, tile.pixelY + tile.height / 2);
+        if (distance < 50) {
+        isNearTownRoad = true;
+          //this.missingboardtext.setPosition(this.protagonist.x, this.protagonist.y - 50);
+          //this.missingboardtext.setVisible(true);
+      } else {
+          //this.missingboardtext.setVisible(false);
+      }
+  });
+
+  // Check for "F" key press and if the protagonist is near the stone layer
+  if (isNearTownRoad) {
+      this.input.keyboard.once('keydown-F', () => {
+          this.scene.start(SCENE_KEYS.FORESTY_ROAD);
+      });
+  }
+}
 
 
 }

@@ -96,6 +96,8 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.image('dark_tiles', 'assets/maps/terrain_dark.png');
    this.load.tilemapTiledJSON('map_inside', '/assets/maps/hut_inside.json');
    this.load.image('inside_tiles', '/assets/hut_inside.png'); // Change the key to 'inside_tiles'
+   this.load.tilemapTiledJSON('map_forest_road', '/assets/maps/FORESTY_ROAD.json');
+   this.load.image('FORESTY_ROAD', '/assets/foresty_road.png'); 
     }
 
   create() {
