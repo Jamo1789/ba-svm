@@ -203,7 +203,73 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
       frameRate: 5,
       repeat: -1
     });
-   
+
+  // Create animations for boatOnBoard
+
+        // Up animation
+        this.anims.create({
+          key: 'boatUp',
+          frames: this.anims.generateFrameNumbers('boatOnBoard', { start: 6, end: 8 }),
+          frameRate: 10,
+          repeat: -1
+      });
+      // idle up
+      this.anims.create({
+        key: 'idle-up',
+        frames: this.anims.generateFrameNumbers('boatOnBoard', { frames: [6] }), // Adjust the frame numbers as needed
+        frameRate: 5,
+        repeat: -1
+      });
+
+      // Right animation
+      this.anims.create({
+          key: 'boatRight',
+          frames: this.anims.generateFrameNumbers('boatOnBoard', { start: 3, end: 5 }),
+          frameRate: 10,
+          repeat: -1
+      });
+          // idle right
+          this.anims.create({
+            key: 'idle-up',
+            frames: this.anims.generateFrameNumbers('boatOnBoard', { frames: [6] }), // Adjust the frame numbers as needed
+            frameRate: 5,
+            repeat: -1
+          });
+      
+
+      // Down animation
+      this.anims.create({
+          key: 'boatDown',
+          frames: this.anims.generateFrameNumbers('boatOnBoard', { start: 0, end: 2 }),
+          frameRate: 10,
+          repeat: -1
+      });
+          // idle down
+          this.anims.create({
+            key: 'idle-up',
+            frames: this.anims.generateFrameNumbers('boatOnBoard', { frames: [0] }), // Adjust the frame numbers as needed
+            frameRate: 5,
+            repeat: -1
+          });
+
+      // Left animation
+      this.anims.create({
+          key: 'boatLeft',
+          frames: this.anims.generateFrameNumbers('boatOnBoard', { start: 9, end: 11 }),
+          frameRate: 10,
+          repeat: -1
+      });
+          // idle left
+          this.anims.create({
+            key: 'idle-left',
+            frames: this.anims.generateFrameNumbers('boatOnBoard', { frames: [9] }), // Adjust the frame numbers as needed
+            frameRate: 5,
+            repeat: -1
+          });
+      // Play the idle animation by default (assuming initial direction is down)
+      this.boatOnBoard.play('boatDown');
+
+
     // Set up keyboard input
     this.cursors = this.input.keyboard.createCursorKeys();
    
@@ -469,24 +535,41 @@ if(this.isOnBoat==false){
   //console.log("spirit on water", true);
   
 }
-    // Control the boatOnBoard movement
-    if (this.boatOnBoard.visible) {
-      if (this.cursors.left.isDown) {
-          this.boatOnBoard.setVelocityX(-200);
-      } else if (this.cursors.right.isDown) {
-          this.boatOnBoard.setVelocityX(200);
-      } else {
-          this.boatOnBoard.setVelocityX(0);
-      }
+if (this.boatOnBoard.visible) {
+  // Handle input and play corresponding animations
 
-      if (this.cursors.up.isDown) {
-          this.boatOnBoard.setVelocityY(-200);
-      } else if (this.cursors.down.isDown) {
-          this.boatOnBoard.setVelocityY(200);
-      } else {
-          this.boatOnBoard.setVelocityY(0);
+  if (this.cursors.up.isDown) {
+      this.boatOnBoard.setVelocityY(-100);
+      this.boatOnBoard.setVelocityX(0); // Ensure only vertical movement
+      this.boatOnBoard.play('boatUp', true);
+  } else if (this.cursors.right.isDown) {
+      this.boatOnBoard.setVelocityX(100);
+      this.boatOnBoard.setVelocityY(0); // Ensure only horizontal movement
+      this.boatOnBoard.play('boatRight', true);
+  } else if (this.cursors.down.isDown) {
+      this.boatOnBoard.setVelocityY(100);
+      this.boatOnBoard.setVelocityX(0); // Ensure only vertical movement
+      this.boatOnBoard.play('boatDown', true);
+  } else if (this.cursors.left.isDown) {
+      this.boatOnBoard.setVelocityX(-100);
+      this.boatOnBoard.setVelocityY(0); // Ensure only horizontal movement
+      this.boatOnBoard.play('boatLeft', true);
+  } else {
+      // Stop the boat and show the idle frame
+      this.boatOnBoard.setVelocity(0, 0);
+
+      // Ensure idle animation based on the last direction
+      if (this.boatOnBoard.anims.currentAnim.key === 'boatUp') {
+          this.boatOnBoard.setFrame(6);
+      } else if (this.boatOnBoard.anims.currentAnim.key === 'boatRight') {
+          this.boatOnBoard.setFrame(3);
+      } else if (this.boatOnBoard.anims.currentAnim.key === 'boatDown') {
+          this.boatOnBoard.setFrame(0);
+      } else if (this.boatOnBoard.anims.currentAnim.key === 'boatLeft') {
+          this.boatOnBoard.setFrame(9);
       }
   }
+}
 this.logProtagonistTileIndex()
 
 if (this.isOnBoat == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T), 500)) {
