@@ -82,6 +82,7 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.image('missing_scene_bg', '/assets/b_n_white_fisherman_bg.png');
   
    this.load.audio('light-rain', '../assets/light-rain.mp3');
+   this.load.audio('main_tune', '../assets/test.wav');
    this.load.audio('rain-inside', '../assets/rain-inside.mp3');
    this.load.audio('catch', '../assets/score_sound.wav');
    

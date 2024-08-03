@@ -106,11 +106,24 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     this.hungerBar = this.add.graphics();
     this.updateHungerBar();
     // Add and play the light-rain audio
-    this.lightRainSound = this.sound.add('light-rain', {
-        loop: true, // Loop the audio
-        volume: 1.5 // Set the volume level
-    });
-    this.lightRainSound.play();
+
+    if (!this.game.lightRainSound) {
+      //play the main tune
+      this.game.lightRainSound = this.sound.add('light-rain', {
+          loop: true, // Loop the audio
+          volume: 0.8 // Set the volume level
+      });
+      this.game.lightRainSound.play();
+  }
+
+    if (!this.game.maintune) {
+      //play the main tune
+      this.game.maintune = this.sound.add('main_tune', {
+          loop: true, // Loop the audio
+          volume: 0.5 // Set the volume level
+      });
+      this.game.maintune.play();
+  }
     // Add hunger level text inside the progress bar
     this.hungerText = this.add.text(700, 35, 'Village hunger level', {
       font: '18px monospace',

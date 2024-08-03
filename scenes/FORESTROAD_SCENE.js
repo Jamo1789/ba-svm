@@ -44,15 +44,10 @@ export default class FORESTY_ROAD extends Phaser.Scene {
                 // Set collision for tile index 1
                 wallsLayer2.setCollision();
         // Create the protagonist sprite
-        this.protagonist = this.physics.add.sprite(240, 410, 'protagonist');
+        this.protagonist = this.physics.add.sprite(539, 911, 'protagonist');
         this.protagonist.body.setSize(hitboxWidth, hitboxHeight);
         this.protagonist.body.setOffset(hitboxOffsetX, hitboxOffsetY);
-        this.rainInsideSound = this.sound.add('rain-inside', {
-          loop: true, // Loop the audio
-          volume: 1.5 // Set the volume level
-      });
-    
-      this.rainInsideSound.play();
+
         // Set the depth of layers
         groundLayer3.setDepth(0);
         this.protagonist.setDepth(1);
@@ -134,6 +129,7 @@ export default class FORESTY_ROAD extends Phaser.Scene {
     
 
     update() {
+      console.log(this.protagonist.x + " " + "x value" + " " + this.protagonist.y)
         this.protagonist.setVelocity(0);
         //determine the text diplsay tile
     const tileIndex162 = this.groundLayer3.findByIndex(162);

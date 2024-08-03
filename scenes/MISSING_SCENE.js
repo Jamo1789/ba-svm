@@ -21,11 +21,7 @@ export default class MISSING_SCENE extends Phaser.Scene {
         const canvasWidth = this.game.canvas.width;
         const canvasHeight = this.game.canvas.height;
         this.add.image(0, 0, 'missing_scene_bg').setOrigin(0).setDisplaySize(canvasWidth, canvasHeight);
-        this.lightRainSound = this.sound.add('light-rain', {
-            loop: true, // Loop the audio
-            volume: 1.0 // Set the volume level
-        });
-        this.lightRainSound.play();
+  
 
         // Add "Missing" text at the top left corner
         this.add.text(16, 16, 'Missing person', { font: 'bold 32px Arial', fill: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }).setScrollFactor(0);
