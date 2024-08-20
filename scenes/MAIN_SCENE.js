@@ -404,7 +404,8 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
      // Make the camera follow the player
 
    // Add collider between protagonist and fisherman's hut
-   this.physics.add.collider(this.protagonist, this.fishermansHut, null, this);
+   this.physics.add.collider(this.protagonist, this.fishermansHut, this.onProtagonistHutCollision, null, this);
+   
    this.physics.add.collider(this.protagonist, this.to_town, console.log("hit"), null, this);
    this.physics.add.collider(this.protagonist, this.noticeBoard, console.log("hit"), null, this);
   }
