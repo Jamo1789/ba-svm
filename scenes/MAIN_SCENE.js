@@ -57,6 +57,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
 
     this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
+    this.noticeBoard = this.physics.add.sprite(3260, 162, 'noticeBoard');
+    this.to_town = this.physics.add.sprite(3600, 140, 'to_town');
     this.fishermansHut = this.physics.add.sprite(characterPositionInWorldMap + 500, 190, 'fishermansHut');
     this.fishermansHut.body.setSize(huthitboxX, huthitboxY);
     this.fishermansHut.body.setOffset(hutboxOffsetX, hutboxOffsetY);
@@ -98,6 +100,12 @@ const grassLayer = map.createLayer('grass_and_tree_layer', darkTileset, 0, 0);
 const stoneLayer = map.createLayer('stones_n_stuff', darkTileset, 0, 0);
 
 const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlayer initialized last.
+
+const fisharea2 = map.createLayer('fisharea2', darkTileset, 0, 0); 
+const fisharea3 = map.createLayer('fisharea3', darkTileset, 0, 0); 
+const fisharea4 = map.createLayer('fisharea4', darkTileset, 0, 0); 
+
+
     // Create hunger level progress bar
     this.hungerBox = this.add.graphics();
     this.hungerBox.fillStyle(0x222222, 0.8);
@@ -135,6 +143,8 @@ const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlay
     this.hungerBar.setDepth(1001);
     this.hungerText.setDepth(1002);
     this.protagonist.setDepth(4);
+    this.to_town.setDepth(4);
+    this.noticeBoard.setDepth(4);
     this.fishermansHut.setDepth(3);
     this.boat.setDepth(4);
     this.boatOnBoard.setDepth(4);
@@ -309,6 +319,9 @@ waterLayer.renderDebug = true;
  this.waterLayer = waterLayer;
  this.grassLayer = grassLayer;
  this.stoneLayer = stoneLayer;
+ this.fisharea2 = fisharea2
+ this.fisharea3 = fisharea3
+ this.fisharea4 = fisharea4
 
 
 // Set up collision detection for water layer
@@ -391,11 +404,13 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
      // Make the camera follow the player
 
    // Add collider between protagonist and fisherman's hut
-   this.physics.add.collider(this.protagonist, this.fishermansHut, this.onProtagonistHutCollision, null, this);
+   this.physics.add.collider(this.protagonist, this.fishermansHut, null, this);
+   this.physics.add.collider(this.protagonist, this.to_town, console.log("hit"), null, this);
+   this.physics.add.collider(this.protagonist, this.noticeBoard, console.log("hit"), null, this);
   }
 
     update() {
-  
+  console.log(this.protagonist.x + " " + this.protagonist.y)
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);

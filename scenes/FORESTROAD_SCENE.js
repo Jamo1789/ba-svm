@@ -113,8 +113,8 @@ export default class FORESTY_ROAD extends Phaser.Scene {
           });
           //enable keyboard input
           this.cursors = this.input.keyboard.createCursorKeys();
-          this.exitHutText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to exit the hut', { font: '24px Arial', fill: '#ffffff' });
-          this.exitHutText.setDepth(100);
+          this.exitForestyRoadText = this.add.text(this.protagonist.x, this.protagonist.y, 'Press f to exit road', { font: '24px Arial', fill: '#ffffff' });
+          this.exitForestyRoadText.setDepth(100);
 
           this.wallsLayer2 = wallsLayer2 
                 // Store a reference to the ground layer for later use if needed
@@ -132,28 +132,28 @@ export default class FORESTY_ROAD extends Phaser.Scene {
       console.log(this.protagonist.x + " " + "x value" + " " + this.protagonist.y)
         this.protagonist.setVelocity(0);
         //determine the text diplsay tile
-    const tileIndex162 = this.groundLayer3.findByIndex(162);
-    const tileCenterX = this.groundLayer3.tileToWorldX(tileIndex162.x);
-    const tileCenterY = this.groundLayer3.tileToWorldY(tileIndex162.y);
+    const tileIndex1005 = this.groundLayer3.findByIndex(1005);
+    const tileCenterX = this.groundLayer3.tileToWorldX(tileIndex1005.x);
+    const tileCenterY = this.groundLayer3.tileToWorldY(tileIndex1005.y);
     const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, tileCenterX, tileCenterY);
     // Update "Enter hut" text position to follow the player
-    this.exitHutText.setPosition(this.protagonist.x, this.protagonist.y);
-  /*      
+    this.exitForestyRoadText.setPosition(this.protagonist.x, this.protagonist.y - 50);
+       
     if (distance <= 70) {
         // Display "Enter hut" text if the player is close to the hut
-        this.exitHutText.setVisible(true);
+        this.exitForestyRoadText.setVisible(true);
         
         // Check if the player presses the "f" key
         if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
             // Launch Scene Two
             this.scene.start(SCENE_KEYS.MAIN_SCENE, {
-              "message": "Exit hut" 
+              "message": "Exit road" 
             });
         }
     } else {
         // Hide "Enter hut" text if the player is not close to the hut
-        this.exitHutText.setVisible(false);
-    }*/
+        this.exitForestyRoadText.setVisible(false);
+    }
     // Handle keyboard input..
     if (this.cursors.up.isDown) {
         this.protagonist.setVelocityY(-160);
