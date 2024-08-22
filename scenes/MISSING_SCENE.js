@@ -15,18 +15,17 @@ export default class MISSING_SCENE extends Phaser.Scene {
     preload() {
         // No need to preload the image here if it is already preloaded in preload_scene
     }
-
     create() {
         // Set the background image
         const canvasWidth = this.game.canvas.width;
         const canvasHeight = this.game.canvas.height;
         this.add.image(0, 0, 'missing_scene_bg').setOrigin(0).setDisplaySize(canvasWidth, canvasHeight);
-  
-
-        // Add "Missing" text at the top left corner
+    
+        // Add "Missing person" text at the top left corner
         this.add.text(16, 16, 'Missing person', { font: 'bold 32px Arial', fill: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }).setScrollFactor(0);
-
-        // Add dialog text at the bottom center of the canvas, slightly higher to fit all rows
+    
+        // Initialize and clear dialog text
+        this.currentText = '';
         this.dialogTextObject = this.add.text(canvasWidth / 2, canvasHeight - 100, '', { 
             font: 'bold 24px Arial', 
             fill: '#FFFFFF', 
@@ -35,14 +34,16 @@ export default class MISSING_SCENE extends Phaser.Scene {
             wordWrap: { width: canvasWidth - 40 }, 
             align: 'center' 
         }).setOrigin(0.5, 1); // Set origin to (0.5, 1) to align text upwards
-        
-        this.showDialogLetterByLetter(this.dialogText, 50); // Adjust the speed (in ms) as needed
+    
+        // Start showing dialog letter by letter
+        this.showDialogLetterByLetter(this.dialogText, 50);
+    
+        // Listen for keypress to return to MAIN_SCENE
         this.input.keyboard.on('keydown-T', () => {
             // Return to MAIN_SCENE and pass the updated number of fish caught back
             this.scene.start('MAIN_SCENE', { playerPosition: this.startingPosition, fishCaught: this.fishCaught, caughtFish: this.caughtFish });
         });
     }
-
     showDialogLetterByLetter(text, speed) {
         let index = 0;
         let currentLineWidth = 0;

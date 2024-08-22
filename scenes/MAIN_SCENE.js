@@ -20,6 +20,7 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.bucketSize = 3;
     this.fishCaught = 0;
     this.hutAvailable = false;
+    this.readNoticeBoardAvailable = false;
   }
 
   preload() {
@@ -63,6 +64,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.fishermansHut.body.setSize(huthitboxX, huthitboxY);
     this.fishermansHut.body.setOffset(hutboxOffsetX, hutboxOffsetY);
     this.fishermansHut.setImmovable(true); // Make the hut immovable
+    this.noticeBoard.setImmovable(true); // Make the hut immovable
+    this.to_town.setImmovable(true); // Make the hut immovable
     this.fishermansHut.body.moves = false; // Ensure the hut does not move at all
     this.boat.setOrigin(0.5, 0.5);
     
@@ -143,8 +146,8 @@ const fisharea4 = map.createLayer('fisharea4', darkTileset, 0, 0);
     this.hungerBar.setDepth(1001);
     this.hungerText.setDepth(1002);
     this.protagonist.setDepth(4);
-    this.to_town.setDepth(4);
-    this.noticeBoard.setDepth(4);
+    this.to_town.setDepth(3);
+    this.noticeBoard.setDepth(3);
     this.fishermansHut.setDepth(3);
     this.boat.setDepth(4);
     this.boatOnBoard.setDepth(4);
@@ -407,11 +410,11 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
    this.physics.add.collider(this.protagonist, this.fishermansHut, this.onProtagonistHutCollision, null, this);
    
    this.physics.add.collider(this.protagonist, this.to_town, console.log("hit"), null, this);
-   this.physics.add.collider(this.protagonist, this.noticeBoard, console.log("hit"), null, this);
+   this.physics.add.collider(this.protagonist, this.noticeBoard, this.onProtagonistNoticeboardCollision, null, this);
   }
 
     update() {
-  console.log(this.protagonist.x + " " + this.protagonist.y)
+  //console.log(this.protagonist.x + " " + this.protagonist.y)
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);
@@ -464,11 +467,16 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       this.enterHutText.setPosition(this.protagonist.x, this.protagonist.y);
       // Check the distance between the protagonist and the fisherman's hut
     const distance = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.fishermansHut.x, this.fishermansHut.y);
+    const distanceToNoticeBoard = Phaser.Math.Distance.Between(this.protagonist.x, this.protagonist.y, this.noticeBoard.x, this.noticeBoard.y);
    
     if (distance > 250) { // Adjust the threshold as needed
       this.enterHutText.setVisible(false);
       this.hutAvailable = false;
   }
+  if (distanceToNoticeBoard > 100) { // Adjust the threshold as needed
+    this.missingboardtext.setVisible(false);
+    this.readNoticeBoardAvailable = false;
+}
   if (this.hutAvailable == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)){
       // Launch Scene Two
       this.scene.start(SCENE_KEYS.HUT_SCENE, {
@@ -478,7 +486,14 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       this.shutdown(); // Manually call the shutdown method
       }
       
-  
+      if (this.readNoticeBoardAvailable == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) { // Adjust the threshold as needed
+                // Launch missing scene
+                this.scene.start(SCENE_KEYS.MISSING_SCENE, {
+                  playerPosition: this.playerPosition,
+                  fishCaught: this.fishCaught 
+                });
+                this.shutdown(); // Manually call the shutdown method
+                }
 // Update "Board the boat" text position to follow the player
 this.boardBoatText.setPosition(this.protagonist.x, this.protagonist.y - 30); // Slightly above the protagonist
 
@@ -751,6 +766,13 @@ onProtagonistHutCollision(protagonist, fishermansHut) {
   console.log('Protagonist collided with Fisherman\'s Hut');
   this.enterHutText.setVisible(true);
   this.hutAvailable = true;
+}
+onProtagonistNoticeboardCollision(protagonist, noticeBoard) {
+  // Handle what happens when the protagonist collides with the fisherman's hut
+  console.log('Protagonist collided with noticeboard');
+  this.missingboardtext.setPosition(this.protagonist.x, this.protagonist.y - 50);
+  this.missingboardtext.setVisible(true);
+  this.readNoticeBoardAvailable = true;
 }
 getAllTilesWithIndex(index) {
   const tiles = [];
