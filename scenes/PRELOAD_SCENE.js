@@ -85,6 +85,10 @@ export default class PreloadScene extends Phaser.Scene {
    this.load.image('fish', '../assets/fish.png');
    this.load.image('underwater_bg', '/assets/underwater_bg.png');
    this.load.image('missing_scene_bg', '/assets/b_n_white_fisherman_bg.png');
+   this.load.image('serene_village', '/assets/serene_village.png');
+   this.load.image('fishing_village_deserted', '/assets/fishing_village_deserted.png');
+   this.load.image('families_leaving', '/assets/families_leaving.png');
+   this.load.image('eero', '/assets/eero.png');
   
    this.load.audio('light-rain', '../assets/light-rain.mp3');
    this.load.audio('main_tune', '../assets/test.wav');
@@ -108,7 +112,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   create() {
     var logo = this.add.image(400, 300, 'logo');
-    this.scene.start(SCENE_KEYS.MAIN_SCENE);
+    this.scene.start(SCENE_KEYS.INTRO_SCENE);
   }
 
   update() {
