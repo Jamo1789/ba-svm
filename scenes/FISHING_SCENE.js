@@ -12,6 +12,7 @@ export default class FISHING_SCENE extends Phaser.Scene {
   preload() {}
 
   create(data) {
+  
               if (data && data.fishCaught !== undefined) {
                 this.fishCaught = data.fishCaught;
                 console.log("fis data passed")
@@ -24,6 +25,8 @@ export default class FISHING_SCENE extends Phaser.Scene {
             // Add the underwater background image and resize it
             const canvas_w = this.game.canvas.width;
             const canvas_h = this.game.canvas.height;
+            this.cameras.main.setBounds(0, 0,this.game.canvas.width, this.game.canvas.height);
+           
             this.background = this.add.image(0, 0, 'underwater_bg').setOrigin(0);
             this.background.setDisplaySize(canvas_w, canvas_h);
             // Enable physics in the scene
