@@ -7,7 +7,6 @@ import { SCENE_KEYS } from "./scene-keys.js";
 import HUT_SCENE from './HUT_SCENE.js'; // Import SceneTwo from scene-two.js
 import FISHING_SCENE from './FISHING_SCENE';
 let last_direction;
-let spirit_terrain;
 
 
 export default class MAIN_SCENE extends Phaser.Scene {
@@ -21,6 +20,8 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.fishCaught = 0;
     this.hutAvailable = false;
     this.readNoticeBoardAvailable = false;
+    this.monster = null;  // Reference to the monster
+    this.dangerEffectTimer = null; // Reference to the danger effect timer
   }
 
   preload() {
@@ -56,7 +57,6 @@ export default class MAIN_SCENE extends Phaser.Scene {
     
      // Initialize the hitbox sprite for collision detection
 
-    this.enemy = this.physics.add.sprite(200, 100, 'enemy');
     this.boat = this.physics.add.sprite(3300, 700, 'boat');
     this.noticeBoard = this.physics.add.sprite(3260, 162, 'noticeBoard');
     this.to_town = this.physics.add.sprite(3600, 140, 'to_town');
@@ -83,11 +83,6 @@ export default class MAIN_SCENE extends Phaser.Scene {
         repeat: -1
     });
 
-    // Set up properties for the water spirit
-    this.enemy.speed = 100; // Adjust the speed as needed
-  
-   
-    this.enemy.setDepth(1);
     const map = this.make.tilemap({ key: 'map' });
   
     this.animatedTiles.init(map);
@@ -160,15 +155,15 @@ const fisharea4 = map.createLayer('fisharea4', darkTileset, 0, 0);
 // Assuming groundLayer is already created and added
 
     this.anims.create({
-      key: 'enemy_move_street',
-      frames: this.anims.generateFrameNumbers('enemy', { start: 3, end: 4 }),
+      key: 'monster_move_street',
+      frames: this.anims.generateFrameNumbers('monster', { start: 3, end: 4 }),
       frameRate: 10,
       repeat: -1 // Loop indefinitely
   });
 
   this.anims.create({
-      key: 'enemy_move_water',
-      frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 1 }), // Assuming frames 2 and 3 are for water animation
+      key: 'monster_move_water',
+      frames: this.anims.generateFrameNumbers('monster', { start: 0, end: 1 }), // Assuming frames 2 and 3 are for water animation
       frameRate: 10,
       repeat: -1 // Loop indefinitely
   });
@@ -308,15 +303,6 @@ waterLayer.renderDebug = true;
 // Add collision callback with console logging
 
  
- // Play the appropriate animation based on the collision result
- if (spirit_terrain == "street") {
-     this.enemy.play('enemy_move_street');
-     //console.log("spirit on street");
-  
- } else {
-     this.enemy.play('enemy_move_water');
-     //console.log("spirit on water");
- }
  
  this.groundLayer = groundLayer;
  this.waterLayer = waterLayer;
@@ -411,6 +397,14 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
    
    this.physics.add.collider(this.protagonist, this.to_town, console.log("hit"), null, this);
    this.physics.add.collider(this.protagonist, this.noticeBoard, this.onProtagonistNoticeboardCollision, null, this);
+
+  // Periodically check for monster spawning
+  this.time.addEvent({
+          delay: 2000, // Check every 2 seconds
+          callback: this.checkForMonsterSpawn,
+          callbackScope: this,
+          loop: true
+      });
   }
 
     update() {
@@ -568,17 +562,8 @@ if(this.isOnBoat==false){
   } else {
     this.protagonist.setVelocity(0);
   }
-    this.physics.moveToObject(this.enemy, this.protagonist, this.enemy.speed);
-     // Play the appropriate animation based on the collision result
- if (spirit_terrain == "street") {
-  this.enemy.play('enemy_move_street', true);
-  //console.log("spirit on street");
-
-} else {
-  this.enemy.play('enemy_move_water', true);
-  //console.log("spirit on water", true);
   
-}
+
 if (this.boatOnBoard.visible) {
   // Handle input and play corresponding animations
 
@@ -622,7 +607,11 @@ if (this.isOnBoat == true && this.input.keyboard.checkDown(this.input.keyboard.a
 else{
   console.log("not on boat")
 }
-
+        // Update monster position to chase the player
+    if (this.monster) {
+          this.moveMonsterTowardsPlayer();
+          this.checkCollision();
+      }
 }
 
 logProtagonistTileIndex() {
@@ -639,15 +628,7 @@ updateHungerBar() {
     this.hungerBar.fillStyle(0xff0000, 1); // Red color for the bar
     this.hungerBar.fillRect(610, 25, 180 * (this.hungerLevel / 100), 20); // Adjust position and size as needed
 }
-  updateInfo() {
- 
-        const tileIndex = this.groundLayer.getTileAtWorldXY(this.enemy.x, this.enemy.y, true).index;
-        if (tileIndex === 485 || tileIndex === 702 || tileIndex === 549 || tileIndex === 583 || tileIndex === 670 || tileIndex === 734 || tileIndex === 735) {
-          spirit_terrain = "street"
-        } else spirit_terrain = "water"
-    
-    
-    };
+
 
   handleEnterHut() {
     const tileIndex = this.groundLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y, true).index;
@@ -828,6 +809,72 @@ checkProtagonistDistanceToTownRoad(){
       });
   }
 }
+/*----------------------MONSTER SECTION START----------------------------*/
+checkForMonsterSpawn() {
+  if (this.monster) {
+      return;  // Don't spawn a new monster if one is already present
+  }
 
+  const spawnProbability = 0.2; // 20% chance to start spawning a monster
+  if (Math.random() < spawnProbability) {
+      this.startDangerEffect();
+  }
+}
+startDangerEffect() {
+  // Keep flashing the screen until the monster is spawned
+  if (!this.dangerEffectTimer) {
+      this.dangerEffectTimer = this.time.addEvent({
+          delay: 500, // Flash every 500 milliseconds
+          callback: this.flashScreen,
+          callbackScope: this,
+          loop: true
+      });
+  }
+
+  // Delay the monster spawn to allow the flash effect to be noticeable
+  this.time.delayedCall(2000, this.spawnMonster, [], this); // 2 seconds delay before spawning
+}
+flashScreen() {
+  this.cameras.main.flash(250, 255, 0, 0); // Flash duration 250ms
+}
+
+//spawn monster with flash effect
+
+spawnMonster() {
+  if (!this.monster) {
+      // Spawn a monster at a random position
+      const x = Phaser.Math.Between(50, this.scale.width - 50);
+      const y = Phaser.Math.Between(50, this.scale.height - 50);
+      this.monster = this.physics.add.sprite(x, y, 'monster');
+      this.monster.setDepth(4);
+
+      // Stop the flashing effect
+      if (this.dangerEffectTimer) {
+          this.dangerEffectTimer.remove(false);
+          this.dangerEffectTimer = null;
+      }
+  }
+}
+
+moveMonsterTowardsPlayer() {
+  const monsterSpeed = 100;
+
+  this.physics.moveToObject(this.monster, this.protagonist, monsterSpeed);
+}
+
+
+checkCollision() {
+  const distance = Phaser.Math.Distance.Between(
+      this.protagonist.x, this.protagonist.y, 
+      this.monster.x, this.monster.y
+  );
+
+  //if (distance < (this.box.width / 2 + this.monster.width / 2)) {
+    //  this.changeScene();
+  //}
+}
+
+
+/*----------------------MONSTER SECTION END----------------------------*/ 
 
 }
