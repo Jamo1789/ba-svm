@@ -22,6 +22,10 @@ export default class MAIN_SCENE extends Phaser.Scene {
     this.readNoticeBoardAvailable = false;
     this.monster = null;  // Reference to the monster
     this.dangerEffectTimer = null; // Reference to the danger effect timer
+    this.monsterExists = null;
+    this.monsterPositionX = null;
+    this.monsterPositionY = null;
+
   }
 
   preload() {
@@ -37,6 +41,10 @@ export default class MAIN_SCENE extends Phaser.Scene {
           this.fishCaught = data.fishCaught;
           console.log("fis data passed")
       }
+          // Restore the monster state
+    if (data.monsterExists) {
+      this.spawnMonsterAt(data.monsterPositionX, data.monsterPositionY);  // Spawn the monster at the saved position
+  }
     //resize canvas when coming from scene-two
     const gameConfig = this.sys.game.config;
             // Create the weather effects
@@ -475,7 +483,10 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
       // Launch Scene Two
       this.scene.start(SCENE_KEYS.HUT_SCENE, {
         playerPosition: this.playerPosition,
-        fishCaught: this.fishCaught 
+        fishCaught: this.fishCaught,
+        monsterExists: this.monsterExists,
+        monsterPositionX:  this.monsterPositionX,
+        monsterPositionY:  this.monsterPositionY
       });
       this.shutdown(); // Manually call the shutdown method
       }
@@ -608,10 +619,14 @@ else{
   console.log("not on boat")
 }
         // Update monster position to chase the player
-    if (this.monster) {
+    if (this.monsterExists) {
           this.moveMonsterTowardsPlayer();
           this.checkCollision();
+          this.monsterPositionX = this.monster.x
+          this.monsterPositionY = this.monster.y
+          console.log(this.monsterPositionX)
       }
+      
 }
 
 logProtagonistTileIndex() {
@@ -744,7 +759,7 @@ startFishing() {
 // Define the collision callback
 onProtagonistHutCollision(protagonist, fishermansHut) {
   // Handle what happens when the protagonist collides with the fisherman's hut
-  console.log('Protagonist collided with Fisherman\'s Hut');
+  
   this.enterHutText.setVisible(true);
   this.hutAvailable = true;
 }
@@ -853,14 +868,19 @@ spawnMonster() {
           this.dangerEffectTimer.remove(false);
           this.dangerEffectTimer = null;
       }
+      this.monsterExists = true;
   }
 }
 
 moveMonsterTowardsPlayer() {
-  const monsterSpeed = 100;
-
-  this.physics.moveToObject(this.monster, this.protagonist, monsterSpeed);
+  if (this.monster && this.monster.body) { // Ensure monster exists and has physics body
+      const monsterSpeed = 50;
+      this.physics.moveToObject(this.monster, this.protagonist, monsterSpeed);
+  } else {
+      console.log("Monster is not initialized properly.");
+  }
 }
+
 
 
 checkCollision() {
@@ -873,7 +893,13 @@ checkCollision() {
     //  this.changeScene();
   //}
 }
-
+// Define this method to reinitialize the monster in the correct position
+spawnMonsterAt(x, y) {
+  this.monster = this.physics.add.sprite(x, y, 'monster');
+  this.monster.setDepth(4);
+  console.log("Monter recreated")
+  // You might need to re-apply physics and properties to the monster
+}
 
 /*----------------------MONSTER SECTION END----------------------------*/ 
 

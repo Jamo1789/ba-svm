@@ -25,6 +25,15 @@ export default class HUT_SCENE extends Phaser.Scene {
           this.fishCaught = data.fishCaught;
           console.log("fis data passed")
     }
+      //check monster state
+        if(data.monsterExists){
+          console.log("monster waiting at" + " " + data.monsterPositionX)
+          
+        }
+            // Capture monster data if present
+          this.monsterExists = data.monsterExists || false;
+          this.monsterPositionX = data.monsterPositionX;
+          this.monsterPositionY = data.monsterPositionY;
         const gameConfig = this.sys.game.config;
     
         // Update canvas size if needed
@@ -149,11 +158,17 @@ export default class HUT_SCENE extends Phaser.Scene {
         
         // Check if the player presses the "f" key
         if (this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F), 500)) {
-            // Launch Scene Two
-            this.scene.start(SCENE_KEYS.MAIN_SCENE, {
-              "message": "Exit hut" 
-            });
-        }
+          const dataToPass = {
+              message: "Exit hut",
+              playerPosition: this.playerPosition, // Pass the player's current position
+              fishCaught: this.fishCaught, // Pass the number of fish caught
+              monsterExists: this.monsterExists,
+              monsterPositionX: this.monsterPositionX,
+              monsterPositionY: this.monsterPositionY
+          };
+      
+          this.scene.start(SCENE_KEYS.MAIN_SCENE, dataToPass);
+      }
     } else {
         // Hide "Enter hut" text if the player is not close to the hut
         this.exitHutText.setVisible(false);
