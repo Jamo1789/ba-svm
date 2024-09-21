@@ -106,6 +106,7 @@ const grassLayer = map.createLayer('grass_and_tree_layer', darkTileset, 0, 0);
 const stoneLayer = map.createLayer('stones_n_stuff', darkTileset, 0, 0);
 
 const waterLayer = map.createLayer('waterlayer', darkTileset, 0, 0); // waterlayer initialized last.
+const pseudoWater = map.createLayer('pseudowater', darkTileset, 0, 0); // waterlayer initialized last.
 
 const fisharea2 = map.createLayer('fisharea2', darkTileset, 0, 0); 
 const fisharea3 = map.createLayer('fisharea3', darkTileset, 0, 0); 
@@ -319,6 +320,7 @@ waterLayer.renderDebug = true;
  this.fisharea2 = fisharea2
  this.fisharea3 = fisharea3
  this.fisharea4 = fisharea4
+ this.pseudoWater = pseudoWater
 
 
 // Set up collision detection for water layer
@@ -326,7 +328,7 @@ waterLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
 
 // Set up collision detection for grass layer
-grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
+//grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 stoneLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
 this.physics.add.collider(this.boatOnBoard, this.groundLayer);
@@ -416,7 +418,6 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   }
 
     update() {
-  //console.log(this.protagonist.x + " " + this.protagonist.y)
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);

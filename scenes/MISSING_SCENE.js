@@ -15,7 +15,12 @@ export default class MISSING_SCENE extends Phaser.Scene {
     preload() {
         // No need to preload the image here if it is already preloaded in preload_scene
     }
-    create() {
+    create(data) {
+          
+        if (data && data.fishCaught !== undefined) {
+            this.fishCaught = data.fishCaught;
+            console.log("fis data passed")
+        }
         // Set the background image
         const canvasWidth = this.game.canvas.width;
         const canvasHeight = this.game.canvas.height;
