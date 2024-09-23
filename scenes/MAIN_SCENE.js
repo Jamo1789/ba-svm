@@ -384,19 +384,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
 
               console.log("Boarded the boat");
   }
-   // Add event listener for pressing "T" to switch to fishing scene
-   this.input.keyboard.on('keydown-T', () => {
-    if (this.isOnBoat) {
-        const playerPosition = {
-            x: this.boatOnBoard.x,
-            y: this.boatOnBoard.y
-        };
 
-        this.scene.start('FISHING_SCENE', { playerPosition: playerPosition, fishCaught: this.fishCaught, bucketSize: this.bucketSize });
-    } else {
-        console.log("Player is not on the boat.");
-    }
-});
 
     // Set camera bounds to match the game world bounds
     this.cameras.main.setBounds(0, 0);
@@ -613,12 +601,15 @@ if (this.boatOnBoard.visible) {
 }
 this.logProtagonistTileIndex()
 
-if (this.isOnBoat == true && this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T), 500)) {
+if (this.isOnBoat && 
+  this.input.keyboard.checkDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T), 500) && 
+  this.monsterExists !== true) {
+  
   this.startFishing();
+} else {
+  console.log("Cannot start fishing. Either not on boat or it's too dangerous due to a monster.");
 }
-else{
-  console.log("not on boat")
-}
+
         // Update monster position to chase the player
     if (this.monsterExists) {
           this.moveMonsterTowardsPlayer();
@@ -755,8 +746,18 @@ disembark() {
   this.disembarkText.setVisible(false);
 }
 startFishing() {
-  this.scene.start('FISHING_SCENE');
+  const playerPosition = {
+      x: this.boatOnBoard.x,
+      y: this.boatOnBoard.y
+  };
+
+  this.scene.start('FISHING_SCENE', { 
+      playerPosition: playerPosition, 
+      fishCaught: this.fishCaught, 
+      bucketSize: this.bucketSize 
+  });
 }
+
 // Define the collision callback
 onProtagonistHutCollision(protagonist, fishermansHut) {
   // Handle what happens when the protagonist collides with the fisherman's hut
