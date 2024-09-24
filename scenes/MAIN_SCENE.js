@@ -406,6 +406,7 @@ console.log(this.protagonist.x + " " + this.protagonist.y)
   }
 
     update() {
+      console.log(this.protagonist.y)
       dockIndex.forEach(index => {
         if(index == this.grassLayer.getTileAtWorldXY(this.protagonist.x, this.protagonist.y))
           this.waterLayer.setCollisionBetween(1, 1000, false);
@@ -828,8 +829,15 @@ checkProtagonistDistanceToTownRoad(){
 }
 /*----------------------MONSTER SECTION START----------------------------*/
 checkForMonsterSpawn() {
+  // Prevent spawning if the boat is at the starting point (y <= 2000)
+  if (this.boatOnBoard.y <= 2000) {
+      console.log("Player is at the starting point, no monster spawn.");
+      return;  // Don't spawn a monster if the player is at the starting point
+  }
+
+  // Don't spawn a new monster if one is already present
   if (this.monster) {
-      return;  // Don't spawn a new monster if one is already present
+      return;
   }
 
   const spawnProbability = 0.2; // 20% chance to start spawning a monster
@@ -837,6 +845,7 @@ checkForMonsterSpawn() {
       this.startDangerEffect();
   }
 }
+
 startDangerEffect() {
   // Keep flashing the screen until the monster is spawned
   if (!this.dangerEffectTimer) {
@@ -875,9 +884,17 @@ spawnMonster() {
 }
 
 moveMonsterTowardsPlayer() {
-  if (this.monster && this.monster.body) { // Ensure monster exists and has physics body
+  if (this.monster && this.monster.body) { // Ensure monster exists and has a physics body
       const monsterSpeed = 50;
-      this.physics.moveToObject(this.monster, this.protagonist, monsterSpeed);
+      
+      // Check if the player is on the boat
+      if (this.isOnBoat) {
+          // Move towards the boat
+          this.physics.moveToObject(this.monster, this.boatOnBoard, monsterSpeed);
+      } else {
+          // Move towards the protagonist
+          this.physics.moveToObject(this.monster, this.protagonist, monsterSpeed);
+      }
   } else {
       console.log("Monster is not initialized properly.");
   }
