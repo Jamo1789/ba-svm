@@ -328,7 +328,7 @@ waterLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
 
 // Set up collision detection for grass layer
-//grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
+grassLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 stoneLayer.setCollisionBetween(1, 10000, true); // Adjust tile indexes as needed
 
 this.physics.add.collider(this.boatOnBoard, this.groundLayer);
